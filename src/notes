@@ -1,0 +1,23 @@
+Currently reverting to NO GRADING, i.e only using constraint_unmodified
+
+I need to reorganize this mess - instead of just having source files with collections of functions, and
+maintaining state by setting global variables in the core.config file, let's instead turn to OOP to help
+organize things. 
+
+harmony_rules.py:
+    Keep the same, for now (I think.)
+
+harmony_solver_gui.py:
+    This should really be more of a wrapper class for constraint.py.
+    
+    class HarmonySolver
+        <fields>:
+            problem     -   The Problem() instance
+            halt        -   A flag (to be set by the user if generating solutions takes too long) that, 
+                            if on, we should stop the solve() loop. 
+        <methods>:
+                                     
+
+
+Why are constraints NOT duplicated when I call harmonySolver.addHarmonyRules() two times in a row? (as in,
+if I click Solve twice)?    

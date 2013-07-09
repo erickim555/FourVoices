@@ -1,0 +1,118 @@
+FourVoices    
+Table of Contents
+    1. About
+        i. GitHub
+    2. History
+    3. Prerequisites
+    4. How to Run
+    5. Contact
+    6. Acknowledgements
+
+========================
+1. About
+========================
+
+FourVoices provides an easy way to generate correct four-part 
+harmonizations of any harmonic progression. It features a UI, audio 
+playback, and the ability to export the vocal parts to PDF. For 
+Soprano, Alto, Tenor, and Bass voices. Tremendously useful for music 
+theory students. 
+
+FourVoices is primarily written by a musician (with a degree in 
+Computer Science), whose love for Music Theory has baffled many a
+friend and foe alike.
+
+FourVoices (as of v.0.23) uses the GNU GPL (ver3) license.
+
+========================
+1.i GitHub
+========================
+
+Since v0.23, FourVoices has been living on GitHub at:
+    
+    http://erickim555.github.com/FourVoices/
+    
+Feel free to clone the repository, make pull requests, etc.
+
+If you wish to view the GitHub page, go to:
+
+    https://github.com/erickim555/FourVoices/
+
+========================
+2. History
+========================
+
+The code base was originally written by erickim555 back in Winter of
+2009, while he was an undergraduate at the University of California, 
+Berkeley. erickim555 managed to get basic solver infrastructure, a
+terrible UI, and basic MIDI playback support working before college,
+teaching, and research pushed this project far to the wayside in 2010.
+
+Since then, erickim555 has earned a Computer Science degree (2011)
+and, more importantly, a great deal of experience. erickim555 had
+been meaning to make this project open-source for years now, and 
+finally in the Spring of 2012 he's doing so. 
+
+erickim555 apologizes in advance for the perilous code base. He wishes
+to express that he's learned a great deal since (especially from
+Professor Paul Hilfinger's infamous CS 164 course), and intends to
+'make things right'.
+
+========================
+3. Prerequisites
+========================
+
+(Tentative, as of v0.23)
+
+Only tested on Windows 7 so far.
+
+Minimums:
+    - Python 2.6.4/2.7.2
+Optional:
+    - pygame
+        Used for MIDI playback. Homepage at:
+            http://www.pygame.org/
+    - mxm_Python_MIDI
+        Used to construct MIDI files for playback. Homepage at:
+            http://www.mxm.dk/products/public/pythonmidi
+
+Note: A design goal is to achieve playback without having to do a
+      round-about approach. Currently, the codebase converts the 
+      vocal parts into a MIDI file (using the mxm_Python_MIDI 
+      library), saves it to a temporary .midi file, then plays back
+      that .midi file using pygame. Questionable, at best! This also
+      has the drawback of requiring two dependencies just to achieve
+      one feature.
+      
+========================
+4. How to Run
+========================
+
+Running FourVoices is very easy. If you're in Windows, you can just
+double-click the 'main.py' file.
+
+If you're in a Unix-variant, simply do:
+    $ python main.py
+
+========================
+5. Contact
+========================
+
+You can reach erickim555 either by messaging me via GitHub:
+
+    https://github.com/erickim555
+    
+Or by e-mailing me at:
+
+    erickim555@gmail.com
+
+========================
+6. Acknowledgements
+========================
+    
+As of v0.23, FourVoice is powered by a wonderful Constraint 
+Satisfaction Problem (CSP) library written by Gustavo Niemeyer:
+
+    http://labix.org/python-constraint
+
+We are very grateful and thankful for this library.

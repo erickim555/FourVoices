@@ -1,0 +1,9 @@
+To create and set up a problem:
+
+harmony_solver_gui.py
+    1.) Create a problem
+        - createProblem() returns a Problem() instance (from constraint_unmodified)
+    2.) Specify the problem
+        - addHarmony(problem, chord, harmony), i.e addHarmony(prob, Chord() instance, "Tonic"/"I")
+    3.) Solve the problem
+        - solveProblem(problem) returns a list of solutions (of length dependent on core.config.num_solutions)

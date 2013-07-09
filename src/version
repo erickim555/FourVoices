@@ -1,0 +1,42 @@
+Four-Part Harmony Solver!
+
+===== Version 0.1
+Thursday, January 14th, 2010
+4:00 PM
+
+- Initial "release"
+- (Hopefully) runnable on any platform
+
+===== Version 0.2
+Thursday, January 14th, 2010
+7:25 PM
+- Fixed bug that prevented it from running on systems without Abjad installed (whoops)
+
+===== Version 0.21
+Saturday, January 16th, 2010
+3:42 PM - ?
+- Re-did some of the visuals to make it less appalling!
+- Added a constraint that prevents the seventh being doubled in a voicing
+
+===== Version 0.22
+- Fixed dim7 (the seventh was NOT a diminished seventh, it was a minor seventh, whoops)
+- Fixed dominant diminished chord resolutions (i.e don't double root of vii, the fifth should resolve down)
+- Fixed a bug where Delete-Everything will keep your 'time-cursor' at where it used to be - annoying when you
+    then went to add a new chord, only to find it was default-set to time, say, 5 (instead of 0).
+- Added rudimentary play-back support! (courtesy of mxm [http://www.mxm.dk/products/public/pythonmidi] and pygame)
+- Added threading support for the solver, in addition to interrupt-behavior for the solver.
+- Fixed solver for proper removal handling...(seemed to not be deleting chords/notes correctly)
+- Fixed bug: delete_all_notes doesn't remove the constraint from the problem! 
+
+===== Version 0.23
+3-28-2012
+- Initial "release" to github project: 
+    "FourVoices" (https://github.com/erickim555/FourVoices)
+- Seems stable (on Windows 7 at least), able to harmonize progressions
+  correctly. Not bad for a code base that hasn't been touched since 
+  July, 2012! :P
+
+TO-DO: File I/O (it'd be nice to be able to save/load previous problem setups / solutions)
+TO-DO: Better GUI!
+TO-DO: Clean up code base (it's public now, gasp!), remove undesirable
+       dependencies (such as pygame).
