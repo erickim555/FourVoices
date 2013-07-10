@@ -16,8 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
+
 from Note import *
 import constraint_noPruning
+
+sys.path.append("..")
+from util.constants import *
 
 class HarmonyConstraint(constraint_noPruning.FunctionConstraint):
   def __init__(self, func, name):
@@ -126,8 +131,7 @@ def __allNotes__(a, b, c, d, chord, harmonies):
       return False
   """ End doubling """
   # For tonic chord, fifth is optional
-  time = chord.getTime()
-  if (harmonies.get(time) == "I") or (harmonies.get(time) == "i") or (harmonies.get(time) == "Tonic"):
+  if (chord.role in ("I", "i", TONIC)):
     fifth = chord.getFifth__()
     if fifth not in history: 
       return (len(history) + 1) == len(chordTones)
@@ -252,4 +256,4 @@ def isSimilarMotion(s0, s1, b0, b1):
 # x0, x1: Upper voice
 # y0, y1: Lower voice
 def handle_temporal_overlap(x0, x1, y0, y1):
-  return (x0 > y1) and (x1 > y0)
+  return (x0 >= y1) and (x1 >= y0)

@@ -22,25 +22,11 @@ Created on Nov 20, 2009
 @author: Sforzando
 '''
 
-import string
+import sys, string, pdb
+sys.path.append('..')
 
-# Class Note
-# 
-#  Pitch
-#    Just a character that represents what the Note represents, i.e "A" or "D#" or "Db".
-#
-#  Octave
-#    A number (from 0 - 8, inclusive) that indictates the octave of the specified pitch.
-#    I.e "A4" is distinct from "A5" [i.e an octave away]
-#
-#  Voice
-#    A character that represents which singer is "holding" the note.
-#    "S" = Soprano, "A" = Alto, "T" = Tenor, "B" = Bass (i.e SATB)
-#    Example: If a note "C4" is held by "T", then it means that the Tenor is singing "C4".
-#
-#  Time
-#    A number that represents which time-step the note falls on. (Loose interpretation, lulz)
-#
+from util.constants import *
+
 # ============= Under the covers implementation of Pitch/Octave =============
 # noteValue is a number from 0 to 87 (corresponding to the 88 keys in a piano)
 # noteValue  = 0 :  A0
@@ -181,35 +167,6 @@ def numToPitch (num):
     print "Error - invalid num passed, returning A."
     return "A0"
 
-
-
-class Note:
-  def __init__(self, pitch, octave, voice, time):
-    self.pitch = pitch
-    self.octave = octave
-    self.voice = voice
-    self.time = time
-    self.calcNoteNum(pitch, octave)
-    
-  def calcNoteNum(self, pitch, octave):
-    self.noteNum= pitchToNum(pitch)
-  
-  def getPitch(self):
-    return self.pitch
-  def getOctave(self):
-    return self.octave
-  def getVoice(self):
-    return self.voice
-  def getTime(self):
-    return self.time
-  def getNoteNum(self):
-    return self.noteNum
-  
-  def equals(self, note):
-    return pitchToNum(self.pitch) == pitchToNum(note.getPitch())
-  def strict_equals(self, note):
-    return self.noteNum == note.getNoteNum()
-
 #  Class Chord
 #
 #    root
@@ -252,10 +209,20 @@ class Note:
 # UPDATE 2: A Chord() instance can either have a bass note specified, OR not. This effects 
 # the solution-process, as a chord WITH a bass note will have that constraint created. A chord
 # WITHOUT a bass note will NOT have a constraint created.
-class Chord:
+
+class Chord(object):
   # I.e Cmaj7/G = Chord("C", ["maj7"], 0, "G")
   # dmin = Chord("D", ["min"], 0)
-  def __init__(self, root, modifiers, time, bassNote=None): 
+  def __init__(self, root, modifiers, time, bassNote=None, role=None): 
+    """
+    Input:
+        str ROOT:
+        list MODIFIERS:
+        int TIME:
+        str BASSNOTE:
+        str ROLE:
+            Harmonic function. One of: TONIC, SUBDOMINANT, or DOMINANT
+    """
     self.root = root
     self.bassNote = bassNote
     self.modifiers = []
@@ -267,6 +234,7 @@ class Chord:
     else:
       self.bassNum = None
     self.rootNum = pitchToNum(root)
+    self.role = role
     
     #self.chordTones = self.getChordTones()
     self.triad = getTriadTones(self.root)
@@ -313,8 +281,14 @@ class Chord:
       self.modifiers.append("dim7")
     if self.modifiers != None:
       for modifier in self.modifiers:
-        chordTones = self.applyModifier(modifier, chordTones)  
+        chordTones = self.applyModifier(modifier, chordTones)
     return tuple(chordTones)
+  
+  def is_dominant(self):
+    """ Return True if this chord's role is a Dominant role. """
+    if self.role:
+        return self.role[0] == "V" or self.role == DOMINANT
+    return False
   
   # Return a tuple of a list of numbers that correspond to the noteNums that need to be
   # present in the chord, as specified by the modifiers. 
@@ -333,41 +307,45 @@ class Chord:
     #  chordTone_nums.append(toneRange)
     #return tuple(chordTone_nums)
     
-    
-  
   def applyModifier(self, modifier, chordTones):
+    modifier = modifier.lower()
     newChordTones = list(chordTones)
-    if modifier == "Maj":
+    if modifier in MOD_MAJOR:
       return newChordTones
-    if modifier == "min":
+    if modifier in MOD_MINOR:
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       return newChordTones
-    if modifier == "maj7":
+    if modifier in MOD_MAJOR_SEVENTH:
       newChordTones.append(numToPitch(self.rootNum - 1))
       return newChordTones
-    if modifier == "min7":
+    if modifier in MOD_MINOR_SEVENTH:
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       newChordTones.append(numToPitch(self.rootNum - 2))
       return newChordTones
-    if modifier == "7":
+    if modifier in MOD_DOMINANT_SEVENTH:
       newChordTones.append(numToPitch(self.rootNum - 2))
       return newChordTones
-    if modifier == "m7(b5)":  # i.e half-diminished
-      newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
-      newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
-      newChordTones.append(numToPitch(self.rootNum - 2))
-      return newChordTones
-    if modifier == "dim":     # i.e fully-diminished
+    if modifier in MOD_DIM_HALF:  # i.e half-diminished
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
+      newChordTones.append(numToPitch(self.rootNum - 2))
       return newChordTones
-    if modifier == "dim7":
+    if modifier in MOD_DIM_FULL:     # i.e fully-diminished
+      newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
+      newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
+      return newChordTones
+    if modifier in MOD_DIM_FULL_SEVENTH:
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
       #newChordTones.append(numToPitch(pitchToNum(newChordTones[2]) + 3))
       newChordTones.append(numToPitch(self.rootNum - 3))
       return newChordTones
-
+      
+  def __str__(self):
+    return "Chord({0},{1},{2},bassNote={3},role={4})".format(self.root, self.modifiers, self.time, self.bassNum, self.role)
+  def __repr__(self):
+    return "Chord({0},{1},{2},bassNote={3},role={4})".format(self.root, self.modifiers, self.time, self.bassNum, self.role)
+    
 # Return the triad (Root, Third, and Fifth).
 # Note that we initially assume that all chord start off as Major Triads - the modifiers
 # will make appropriate changes to the chordTones to make the chord minor/diminished/etc.     

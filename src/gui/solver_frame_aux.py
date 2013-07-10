@@ -10,6 +10,8 @@ import tkMessageBox
 import gui.config
 import core.Note
 
+from util.constants import *
+
 class SolverFrameAux(Frame):
   
   def init_frame(self, solverFrame):
@@ -249,9 +251,9 @@ class AddFunctionDialog(tkSimpleDialog.Dialog):
   def body(self, master):
     self.function = StringVar()
     
-    self.tonic = Radiobutton(master, text="Tonic", variable=self.function, value="Tonic", indicatoron=0, width=15)
-    self.predominant = Radiobutton(master, text="Predominant", variable=self.function, value="Predominant", indicatoron=0, width=15)
-    self.dominant = Radiobutton(master, text="Dominant", variable=self.function, value="Dominant", indicator=0, width=15)
+    self.tonic = Radiobutton(master, text="Tonic", variable=self.function, value=TONIC, indicatoron=0, width=15)
+    self.predominant = Radiobutton(master, text="Predominant", variable=self.function, value=PREDOMINANT, indicatoron=0, width=15)
+    self.dominant = Radiobutton(master, text="Dominant", variable=self.function, value=DOMINANT, indicator=0, width=15)
     
     self.tonic.grid(row=0, column=0)
     self.predominant.grid(row=1, column=0)

@@ -21,10 +21,14 @@ Created on Nov 22, 2009
 
 @author: Sforzando
 '''
+import sys, os, time, pdb, traceback, argparse, itertools
+
 import constraint_noPruning as constraint
+import config, Note
 from harmony_rules import *
+
+sys.path.append("..")
 from Grader.grader import grade, grade_debug
-import core.config
 from Data_Structures.dataStructs import TimeList
 from util.constants import *
 
@@ -38,6 +42,140 @@ from util.constants import *
       ## Different time steps.
       ## i.e harmony[3] is the harmony at time step 3, like "ii6" or "V42"
 
+def solve(chords, figures):
+    """ Solves an input harmonization problem.
+    Input:
+        list CHORDS: [Chord c, ...]
+            Chords+harmonies at each time step.
+        list FIGURES: [(int time, str voice, int pitch), ...]
+            Optional specified notes that should be used.
+    Output:
+        Problem PROB, SOLUTIONS_ITER
+    """
+    problem = init_problem(constraint.Problem(), chords, figures)
+    solutions_iter = problem.getSolutionIter()
+    return problem, solutions_iter        
+
+def init_problem(problem, chords, figures):
+    """ Initializes the CSP Problem by adding all constraints
+    introduced by specified chords, harmonies, and optional provided
+    lines.
+    Input:
+        Problem PROBLEM:
+        list CHORDS:
+        list LINES:
+    Output:
+        Problem PROBLEM.
+    """
+    # 1.) Add simple Chord constraints (unary)
+    chords_ = sorted(chords, key=lambda c: c.time)
+    for chord in chords_:
+        t = chord.time
+        vars_toadd = [make_var(voice, t) for voice in VOICE_PREFIXES]
+        for i, var in enumerate(vars_toadd):
+            voice = VOICE_PREFIXES[i]
+            domain = get_singer_domain(voice, chord)
+            problem.addVariable(var, domain)
+        # TODO: Fully remove the 2nd arg (harmonies) from SpecifyChordConstraint)
+        problem.addConstraint(SpecifyChordConstraint(chord, None), vars_toadd)
+        if chord.bassNote != None:
+            problem.addConstraint(SetBassConstraint(chord), [make_var("b", t)])
+
+    # 2.) Add relational harmonic constraints
+    num_time_steps = len(chords_)
+    for t, chord in enumerate(chords_):
+      # Make sure that voices are at most an octave away from each other
+      problem.addConstraint(SpacingConstraint(), [make_var("s", t), make_var("a", t)])
+      problem.addConstraint(SpacingConstraint(), [make_var("a", t), make_var("t", t)])
+      problem.addConstraint(SpacingConstraint(), [make_var("t", t), make_var("b", t)])
+      # Make sure that voices don't cross each other
+      problem.addConstraint(CrossoverConstraint(), 
+                            [make_var(v, t) for v in VOICE_PREFIXES])
+      if t < (num_time_steps - 1):    # Mainly, if t != numTimeSteps    
+        # Check Leaps
+        for voice in VOICE_PREFIXES:
+          var0, var1 = make_var(voice, t), make_var(voice, t+1)
+          problem.addConstraint(LeapConstraint(), [var0, var1])
+        # Make sure that there are no temporal overlaps
+        problem.addConstraint(TemporalOverlapConstraint(),
+                              [make_var("s", t), make_var("s", t+1),
+                               make_var("a", t), make_var("a", t+1)])
+        problem.addConstraint(TemporalOverlapConstraint(),
+                              [make_var("a", t), make_var("a", t+1),
+                               make_var("t", t), make_var("t", t+1)])
+        problem.addConstraint(TemporalOverlapConstraint(),
+                              [make_var("t", t), make_var("t", t+1),
+                               make_var("b", t), make_var("b", t+1)])
+        # Add parallel fifth/octave handling
+        voice_pairs = []
+        singer_array = []
+        history = []
+        for singer in ("s", "a", "t", "b"):
+            for singer2 in ("s", "a", "t", "b"):
+              if (singer != singer2) and ((singer, singer2) not in history):
+                singer_array.append((singer+"_"+str(t), singer+"_"+str(t+1), singer2+"_"+str(t), singer2+"_"+str(t+1)))
+                history.append((singer2, singer))
+        for i in range(len(singer_array)):
+            problem.addConstraint(ParallelFifthConstraint(), singer_array[i])
+            problem.addConstraint(ParallelOctaveConstraint(), singer_array[i])
+        # For each possible pair of voices, enforce parallel 5th/8th
+        # constraints
+        #for voice0, voice1 in itertools.product(VOICE_PREFIXES, VOICE_PREFIXES):
+        #  if voice0 == voice1: continue
+        #  vars = (make_var(voice0, t), make_var(voice0, t+1),
+        #          make_var(voice1, t), make_var(voice1, t+1))
+        #  problem.addConstraint(ParallelFifthConstraint(), vars)
+        #  problem.addConstraint(ParallelOctaveConstraint(), vars)
+        # Add behavior for soprano/bass relationship (i.e no hidden 5th, hidden octave)
+        ### Note: singer_array[2] contains the tuple ( <s0>, <s1>, <b0>, <b1> ), which is what we want
+        var_ = (make_var("s", t), make_var("s", t+1),
+                make_var("b", t), make_var("b", t+1))
+        problem.addConstraint(HiddenMotionOuterConstraint(), var_)
+        # Add behavior for sevenths
+        if chord.getSeventh__() != None:
+          for voice in VOICE_PREFIXES:
+            problem.addConstraint(SeventhConstraint(chord),
+                                  [make_var(voice, t), make_var(voice, t+1)])
+        # Add behavior for leading tones of dominant chords
+        if chord.is_dominant():
+          for voice in VOICE_PREFIXES:
+            problem.addConstraint(LeadingToneConstraint(chord), 
+                                  [make_var(voice, t), make_var(voice, t+1)])
+        # Add behavior for diminished fifths of diminished chords
+        if ("dim" in chord.modifiers) or ("dim7" in chord.modifiers):
+          for voice in VOICE_PREFIXES:
+            problem.addConstraint(DiminishedFifthConstraint(chord), 
+                                 [make_var(voice, t), make_var(voice, t+1)])
+    return problem
+            
+def make_var(voice, time):
+    """ Creates a CSP Variable for singer VOICE at time TIME. """
+    # CSP vars are strings of the form:
+    #     "<voice>_<time>"
+    # i.e. "s_0"    
+    return "{0}_{1}".format(voice, time)
+      
+def get_singer_domain(voice, chord):
+    """ Returns a list of valid possible pitches for VOICE to sing on
+    CHORD.
+    Input:
+        str VOICE: "s", "a", "t", or "b"
+        Chord CHORD:
+    Output:
+        list PITCHES: [int pitch0, ...]
+    """
+    domain = []
+    voice_range = {"s": soprano_range,
+                   "a": alto_range,
+                   "t": tenor_range,
+                   "b": bass_range}[voice]
+    chordTones__= chord.getChordTones_nums()
+    for note in chordTones__:
+        for note2 in voice_range:
+          if (note2 % 12) == note:
+            domain.append(note2)
+    return domain
+      
 class HarmonySolver():
   
   def __init__(self):
@@ -77,7 +215,7 @@ class HarmonySolver():
   # Returns True if the harmony at the specified time-step is Dominant (i.e a "V") or not.
   def isDominant(self, time):
     harmony = self.harmonies.get(time)
-    return (harmony[0] == "V") or (harmony == "Dominant")
+    return (harmony[0] == "V") or (harmony == DOMINANT)
   
   # In an attempt to prune the domain-space of each variable, I will do preprocessing to
   # decrease the domain, rather than enforcing it with constraints.
@@ -155,6 +293,7 @@ class HarmonySolver():
   
   def addHarmony(self, harmony, time):
     self.harmonies.add(time, harmony)
+    self.chords[time].role = harmony
   
   def removeHarmony(self, time):
     self.harmonies.remove(time)
@@ -235,9 +374,8 @@ class HarmonySolver():
     solutions_graded = []
     
     bestGradeSoFar = -1000000000
-    
+
     for solution in solutionIter:
-      
       if self.isHalt() or (numberSolutions == self.num_solutions):
         break  
       
@@ -356,3 +494,98 @@ class HarmonySolver():
 #  else:
 #    examples.harmonytests.test4(harm)
 #  print "Time (in seconds) to perform test: ", time.time() - time1
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem", help="Path to problem instance.")
+    parser.add_argument("--run_tests", action="store_true",
+                        help="Runs the solver on a suite of built-in \
+problem instances.")
+    return parser.parse_args()
+    
+def parse_problemfile(problemfile):
+    """ Parses an input file containing a Harmony problem.
+    See the problem_template file for information about the expected
+    file format.
+    Input:
+        str PROBLEMFILE:
+    Output:
+        (list CHORDS, list FIGURES)
+    """
+    def parse_chord(line):
+        try:
+            s = line.split(",")
+            time, root, role, bassnote = s[:4]
+            time, root, role, bassnote = int(time), root.strip().upper(), role.strip().lower(), bassnote.strip().upper()
+            if root in ("", "NONE", " "):
+                root = None
+            if role in ("", "none", " "):
+                role = None
+            if bassnote in ("", "NONE", " "):
+                bassnote = None
+            mods = [w.lower().strip() for w in s[4:]]
+            mods = [m for m in mods if m.lower() not in ('', 'none', ' ')]
+            chord = Chord(root, mods, time, bassNote=bassnote, role=role)
+            return chord
+        except:
+            return None
+    def parse_figure(line):
+        # TODO: Implement me
+        return None
+    f = open(problemfile, 'r')
+    is_chord, is_figures = False, False
+    BEGIN_CHORD, BEGIN_FIGURES = "[Chords]", "[Figures]"
+    chords, figures = [], []
+    for line in f.readlines():
+        if not line: continue
+        line = line.strip()
+        if not line or line.startswith("#"): continue
+        if line.startswith(BEGIN_CHORD):
+            is_chord, is_figures = True, False
+        elif line.startswith(BEGIN_FIGURES):
+            is_chord, is_figures = False, True
+        elif is_chord:
+            chord = parse_chord(line)
+            if chord != None:
+                chords.append(chord)
+        elif is_figures:
+            figure = parse_figure(line)
+            if figure != None:
+                figures.append(figure)
+    return chords, figures
+    
+def run_tests():
+    pass
+    
+def main():
+    args = parse_args()
+    if args.run_tests:
+        return run_tests()
+    chords, figures = parse_problemfile(args.problem)
+    print "(Info) Solving Harmony Problem"
+    t = time.time()
+    problem, solutions = solve(chords, figures)
+    dur = time.time() - t
+    print "(Info) Done Solving ({0:.4f}s)".format(dur)
+    flag_continue = False
+    cnt_total = 0
+    for solution in solutions:
+        if flag_continue:
+            cnt_total += 1
+            continue
+        tmax = len(solution) / 4
+        for t in xrange(tmax):
+            print "Time={0}:".format(t)
+            for voice in VOICE_PREFIXES:
+                var = make_var(voice, t)
+                pitchnum = solution[var]
+                print "    {0}: {1}".format(voice, Note.numToPitch_absolute(pitchnum))
+        s = raw_input("({0}) Press enter to continue, 'c' to skip, or 'q' to exit.".format(cnt_total))
+        cnt_total += 1
+        if s == 'c':
+            flag_continue = True
+        elif s == 'q':
+            break
+    print "{0} Solutions total.".format(cnt_total)
+            
+if __name__ == '__main__':
+    main()
