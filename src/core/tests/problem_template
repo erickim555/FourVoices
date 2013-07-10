@@ -1,0 +1,36 @@
+# This is a template file outlining how input files to the command
+# line interface should look like.
+# Comments are signaled by a '#' at the beginning of the line (and
+# ONLY at the start of the line)
+
+# Each Problem file is broken up in two sections: Chords, and Lines.
+#
+# The 'Chords' section is signalled by the line:
+#     [Chords]  
+# This section is csv-style, with columns:
+#     int time, str root, str role, str modifier0, str modifier1, ...
+# where:
+#     int TIME: Which time position this row defines
+#     str ROOT: The root note of this chord. Can be None.
+#     str ROLE: The harmonic role (function) of this chord. Can be
+#               one of:
+#                   tonic
+#                   subdominant
+#                   dominant
+#                   None
+#     str BASSNOTE: Can be a note, or None.
+#     str MODIFIERS: Can be: major, minor, 7, maj7, min7, dim, dim7, None.
+# For instance, here's a simple ii-V-I instance:
+
+[Chords]
+# time, root, role, bassnote, modifiers...
+0, D, subdominant, None, minor
+1, G, dominant, B2, 7
+2, C, tonic, C3, major
+
+# The 'Lines' section is signalled by the line:
+#     [Lines]
+# Here, specific notes can be specified. For instance, if you want the
+# soprano voice to follow a particular melody, that melody can be
+# inputted here.
+

@@ -1,0 +1,7 @@
+# A simple V-I
+# time, root, role, bassnote, modifiers...
+[Chords]
+0, G, dominant, G, None
+1, C, tonic, C, None
+#0, G, dominant, None, None
+#1, C, tonic, None, None

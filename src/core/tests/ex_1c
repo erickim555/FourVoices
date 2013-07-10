@@ -1,0 +1,6 @@
+# A simple ii-V7-I instance
+# time, root, role, bassnote, modifiers...
+[Chords]
+0, D, subdominant, None, minor
+1, G, dominant, None, 7
+2, C, tonic, None, major
