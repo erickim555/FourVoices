@@ -122,6 +122,12 @@ def init_problem(problem, chords, figures):
           for voice in VOICE_PREFIXES:
             problem.addConstraint(DiminishedFifthConstraint(chord), 
                                  [make_var(voice, t), make_var(voice, t+1)])
+        # For fully-dim chords, the root should always resolve upwards
+        if chord.is_dim_full():
+            for voice in VOICE_PREFIXES:
+                problem.addConstraint(FullDiminishedRootConstraint(chord),
+                                      [make_var(voice, t), make_var(voice, t+1)])
+
     return problem
             
 def make_var(voice, time):

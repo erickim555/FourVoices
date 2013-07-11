@@ -105,6 +105,11 @@ class TemporalOverlapConstraint(HarmonyConstraint):
     name = "temporalOverlap"
     func = lambda x0,x1,y0,y1: handle_temporal_overlap(x0, x1, y0, y1)
     HarmonyConstraint.__init__(self, func, name)
+
+class FullDiminishedRootConstraint(HarmonyConstraint):
+  def __init__(self, chord):
+    f = lambda v0, v1: handle_fulldimroot(v0, v1, chord)
+    HarmonyConstraint.__init__(self, f, "fulldimroot")
     
 # Need to make sure that the correct notes of the chord are hit.
 # This just makes sure that every note of the chord is present, it doesn't check for
@@ -257,3 +262,18 @@ def isSimilarMotion(s0, s1, b0, b1):
 # y0, y1: Lower voice
 def handle_temporal_overlap(x0, x1, y0, y1):
   return (x0 >= y1) and (x1 >= y0)
+
+def handle_fulldimroot(v0, v1, chord):
+    """ For fully-diminished chords, used in an applied-dominant setting,
+    the root MUST resolve upwards.
+    Input:
+        int V0:
+            Pitchnum that a singer V at time (t) is singing
+        int V1:
+            Pitchnum that a singer V at time (t+1) is singing
+    Output:
+        bool IS_SATISFIED.
+    """
+    if (v0 % 12) == chord.getChordTones_nums()[0]:
+        return (v1 - v0) == 1
+    return True

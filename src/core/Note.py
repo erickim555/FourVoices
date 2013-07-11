@@ -285,14 +285,12 @@ class Chord(object):
 
   def is_dim(self):
     """ Is this chord diminished (all variants)? """
-    return self.is_dim_full() or self.is_dim_full_seventh()or self.is_dim_half()
+    return (len(set(self.modifiers).intersection(MOD_DIM)) >= 1 or
+            self.is_dim_full() or self.is_dim_half())
 
   def is_dim_full(self):
     """ Return True if this chord is FULLY diminished. """
     return len(set(self.modifiers).intersection(MOD_DIM_FULL)) >= 1
-  def is_dim_full_seventh(self):
-    """ Return True if this chord is a FULLY diminished SEVENTH chord. """
-    return len(set(self.modifiers).intersection(MOD_DIM_FULL_SEVENTH)) >= 1
   def is_dim_half(self):
     """ Return True if this chord is HALF diminished. """
     return len(set(self.modifiers).intersection(MOD_DIM_HALF)) >= 1
@@ -337,11 +335,11 @@ class Chord(object):
       newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
       newChordTones.append(numToPitch(self.rootNum - 2))
       return newChordTones
-    if modifier in MOD_DIM_FULL:     # i.e fully-diminished
+    if modifier in MOD_DIM:     # i.e diminished
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
       return newChordTones
-    if modifier in MOD_DIM_FULL_SEVENTH:
+    if modifier in MOD_DIM_FULL: # fully diminished
       newChordTones[1] = numToPitch(pitchToNum(newChordTones[1]) - 1)
       newChordTones[2] = numToPitch(pitchToNum(newChordTones[2]) - 1)
       #newChordTones.append(numToPitch(pitchToNum(newChordTones[2]) + 3))
