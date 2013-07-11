@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
+import sys, pdb
 
 from Note import *
 import constraint_noPruning
@@ -205,7 +205,7 @@ def handleLeadingTone(chord):
 
 # Makes sure that the diminished fifth of diminished chords resolves downward.
 def handleDiminishedFifths(chord):
-  flatFifth = chord.getFifth__() - 1
+  flatFifth = chord.getFifth__()
   return lambda x,y : __flatFifth__(x,y,flatFifth)
 
 def __flatFifth__(x, y, flatFifth):

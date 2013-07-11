@@ -16,12 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-'''
-Created on Nov 20, 2009
-
-@author: Sforzando
-'''
-
 import sys, string, pdb
 sys.path.append('..')
 
@@ -99,7 +93,6 @@ def pitchToNum(pitch):
   else:
     print "Error - invalid pitch passed, returning 0"
     return 0
-
 
 # num := number representing ABSOLUTE pitch
 # i.e  numToPitch(13) = A#1
@@ -289,6 +282,20 @@ class Chord(object):
     if self.role:
         return self.role[0] == "V" or self.role == DOMINANT
     return False
+
+  def is_dim(self):
+    """ Is this chord diminished (all variants)? """
+    return self.is_dim_full() or self.is_dim_full_seventh()or self.is_dim_half()
+
+  def is_dim_full(self):
+    """ Return True if this chord is FULLY diminished. """
+    return len(set(self.modifiers).intersection(MOD_DIM_FULL)) >= 1
+  def is_dim_full_seventh(self):
+    """ Return True if this chord is a FULLY diminished SEVENTH chord. """
+    return len(set(self.modifiers).intersection(MOD_DIM_FULL_SEVENTH)) >= 1
+  def is_dim_half(self):
+    """ Return True if this chord is HALF diminished. """
+    return len(set(self.modifiers).intersection(MOD_DIM_HALF)) >= 1
   
   # Return a tuple of a list of numbers that correspond to the noteNums that need to be
   # present in the chord, as specified by the modifiers. 

@@ -20,7 +20,7 @@ MOD_MINOR = ("minor", "min")
 MOD_MAJOR_SEVENTH = ("major7", "maj7")
 MOD_MINOR_SEVENTH = ("minor7", "min7", "m7")
 MOD_DOMINANT_SEVENTH = ("7",)
-MOD_DIM_HALF = ("m7(b5)",)
+MOD_DIM_HALF = ("min7(b5)", "m7(b5)", "halfdim")
 MOD_DIM_FULL = ("dim",)
 MOD_DIM_FULL_SEVENTH = ("dim7",)
 

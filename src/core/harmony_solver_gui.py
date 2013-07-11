@@ -16,11 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-'''
-Created on Nov 22, 2009
-
-@author: Sforzando
-'''
 import sys, os, time, pdb, traceback, argparse, itertools
 
 import constraint_noPruning as constraint
@@ -31,16 +26,6 @@ sys.path.append("..")
 from Grader.grader import grade, grade_debug
 from Data_Structures.dataStructs import TimeList
 from util.constants import *
-
-###
-# First Parallel Fifth caught! 2:39 AM, 11-23-09 :)
-
-#chords = []    ## A data structure to keep track of what chords
-              ## are at what time steps.
-              ## i.e chords[3] is the chord at time step 3
-#harmonies = []  ## A data structure to keep track of the harmony at
-      ## Different time steps.
-      ## i.e harmony[3] is the harmony at time step 3, like "ii6" or "V42"
 
 def solve(chords, figures):
     """ Solves an input harmonization problem.
@@ -118,16 +103,7 @@ def init_problem(problem, chords, figures):
         for i in range(len(singer_array)):
             problem.addConstraint(ParallelFifthConstraint(), singer_array[i])
             problem.addConstraint(ParallelOctaveConstraint(), singer_array[i])
-        # For each possible pair of voices, enforce parallel 5th/8th
-        # constraints
-        #for voice0, voice1 in itertools.product(VOICE_PREFIXES, VOICE_PREFIXES):
-        #  if voice0 == voice1: continue
-        #  vars = (make_var(voice0, t), make_var(voice0, t+1),
-        #          make_var(voice1, t), make_var(voice1, t+1))
-        #  problem.addConstraint(ParallelFifthConstraint(), vars)
-        #  problem.addConstraint(ParallelOctaveConstraint(), vars)
         # Add behavior for soprano/bass relationship (i.e no hidden 5th, hidden octave)
-        ### Note: singer_array[2] contains the tuple ( <s0>, <s1>, <b0>, <b1> ), which is what we want
         var_ = (make_var("s", t), make_var("s", t+1),
                 make_var("b", t), make_var("b", t+1))
         problem.addConstraint(HiddenMotionOuterConstraint(), var_)
@@ -142,7 +118,7 @@ def init_problem(problem, chords, figures):
             problem.addConstraint(LeadingToneConstraint(chord), 
                                   [make_var(voice, t), make_var(voice, t+1)])
         # Add behavior for diminished fifths of diminished chords
-        if ("dim" in chord.modifiers) or ("dim7" in chord.modifiers):
+        if chord.is_dim():
           for voice in VOICE_PREFIXES:
             problem.addConstraint(DiminishedFifthConstraint(chord), 
                                  [make_var(voice, t), make_var(voice, t+1)])
@@ -210,7 +186,6 @@ class HarmonySolver():
             "a": 1,
             "t": 2,
             "b": 3}[lowerCase[0]] # Grab first letter
-  
   
   # Returns True if the harmony at the specified time-step is Dominant (i.e a "V") or not.
   def isDominant(self, time):
@@ -574,7 +549,7 @@ def main():
             continue
         tmax = len(solution) / 4
         for t in xrange(tmax):
-            print "Time={0}:".format(t)
+            print "Time={0}:    [{1}]".format(t, chords[t])
             for voice in VOICE_PREFIXES:
                 var = make_var(voice, t)
                 pitchnum = solution[var]
