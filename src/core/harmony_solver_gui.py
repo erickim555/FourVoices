@@ -538,12 +538,15 @@ def main():
     chords, figures = parse_problemfile(args.problem)
     print "(Info) Solving Harmony Problem"
     t = time.time()
-    problem, solutions = solve(chords, figures)
+    problem, solutions_iter = solve(chords, figures)
     dur = time.time() - t
     print "(Info) Done Solving ({0:.4f}s)".format(dur)
     flag_continue = False
-    cnt_total = 0
-    for solution in solutions:
+    solutions = []
+    for sol in solutions_iter:
+        solutions.append(sol)
+    print "    {0} Solutions Total.".format(len(solutions))
+    for i, solution in enumerate(solutions):
         if flag_continue:
             cnt_total += 1
             continue
@@ -554,13 +557,11 @@ def main():
                 var = make_var(voice, t)
                 pitchnum = solution[var]
                 print "    {0}: {1}".format(voice, Note.numToPitch_absolute(pitchnum))
-        s = raw_input("({0}) Press enter to continue, 'c' to skip, or 'q' to exit.".format(cnt_total))
-        cnt_total += 1
+        s = raw_input("({0}/{1}) Press enter to continue, 'c' to skip, or 'q' to exit.".format(i, len(solutions) - 1))
         if s == 'c':
             flag_continue = True
         elif s == 'q':
             break
-    print "{0} Solutions total.".format(cnt_total)
             
 if __name__ == '__main__':
     main()
