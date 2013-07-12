@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, os, time, pdb, traceback, argparse, itertools
 
-import constraint_noPruning as constraint
 import config, Note
 from harmony_rules import *
 
 sys.path.append("..")
+from constraint import constraint
 from Grader.grader import grade, grade_debug
 from Data_Structures.dataStructs import TimeList
 from util.constants import *

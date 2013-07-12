@@ -1,0 +1,7 @@
+The Constraint Satisfaction Problem solver used here (constraint.py) was
+slightly modified from the solver written by:
+
+     Gustavo Niemeyer <gustavo@niemeyer.net>
+
+A link to its project page can be found here:
+    http://labix.org/python-constraint

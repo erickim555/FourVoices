@@ -19,15 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys, pdb
 
 from Note import *
-import constraint_noPruning
 
 sys.path.append("..")
+from constraint import constraint
 from util.constants import *
 
-class HarmonyConstraint(constraint_noPruning.FunctionConstraint):
+class HarmonyConstraint(constraint.FunctionConstraint):
   def __init__(self, func, name):
     self.name = name
-    constraint_noPruning.FunctionConstraint.__init__(self, func)
+    constraint.FunctionConstraint.__init__(self, func)
   def __str__(self):
     return self.name
   def __repr__(self):

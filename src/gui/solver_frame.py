@@ -8,8 +8,6 @@ from util.mtTkinter import *
 import tkFont
 import tkMessageBox
 import tkSimpleDialog
-import core.constraint
-import core.constraint_noPruning
 import core.harmony_solver_gui
 import gui.config
 import util.SolutionToMidi
