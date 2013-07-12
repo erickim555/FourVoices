@@ -1,0 +1,6 @@
+# dimfull_1a: Make sure that fully-diminished chords work
+[Chords]
+# time, root, role, bassnote, modifiers...
+0, F#, None, None, dim7
+1, G, dominant, None
+2, C, tonic, None, major

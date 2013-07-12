@@ -1,0 +1,5 @@
+# dom_1a: Simple tests of dominant 7th chords
+[Chords]
+# time, root, role, bassnote, modifiers...
+0, G, dominant, None, 7
+1, C, tonic, C, major

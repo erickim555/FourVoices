@@ -1,0 +1,8 @@
+# dim_1a: Make sure that diminished chords work
+[Chords]
+# time, root, role, bassnote, modifiers...
+0, D, subdominant, None, halfdim
+1, G, dominant, B, major
+2, C, tonic, C, major
+
+
