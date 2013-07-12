@@ -5,13 +5,13 @@ Created on Jan 31, 2010
 '''
 import unittest
 import core.config
-from core.harmony_solver_gui import createProblem, addHarmony, solveProblem, addHarmonyRules
+from core.solver import createProblem, addHarmony, solveProblem, addHarmonyRules
 from core.Note import Chord, pitchToNum, numToPitch
 from Data_Structures.timelist import TimeList
 """
 To create and set up a problem:
 
-harmony_solver_gui.py
+solver.py
     1.) Create a problem
         - createProblem() returns a Problem() instance (from constraint_unmodified)
     2.) Specify the problem

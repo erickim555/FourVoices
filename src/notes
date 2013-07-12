@@ -7,7 +7,7 @@ organize things.
 harmony_rules.py:
     Keep the same, for now (I think.)
 
-harmony_solver_gui.py:
+solver.py:
     This should really be more of a wrapper class for constraint.py.
     
     class HarmonySolver

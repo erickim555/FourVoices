@@ -1,6 +1,6 @@
 To create and set up a problem:
 
-harmony_solver_gui.py
+solver.py
     1.) Create a problem
         - createProblem() returns a Problem() instance (from constraint_unmodified)
     2.) Specify the problem

@@ -8,7 +8,7 @@ from util.mtTkinter import *
 import tkFont
 import tkMessageBox
 import tkSimpleDialog
-import core.harmony_solver_gui
+import core.solver
 import gui.config
 import util.SolutionToMidi
 from Data_Structures.dataStructs import TimeList
@@ -70,7 +70,7 @@ class SolverFrame(Frame):
     self.haltButton.config(activebackground="BLACK", activeforeground="RED")
     self.haltButton.pack(side=BOTTOM, anchor=CENTER)
     
-    self.harmonySolver = core.harmony_solver_gui.HarmonySolver()
+    self.harmonySolver = core.solver.HarmonySolver()
   
   def openSolutionsResultWindow(self):
     result_window = SolutionsResultWindow(self)

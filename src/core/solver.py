@@ -554,7 +554,6 @@ def main():
     print "    {0} Solutions Total.".format(len(solutions))
     for i, solution in enumerate(solutions):
         if flag_continue:
-            cnt_total += 1
             continue
         tmax = len(solution) / 4
         for t in xrange(tmax):

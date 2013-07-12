@@ -20,7 +20,7 @@ import time
 import sys
 
 from core.Note import Chord
-from core.harmony_solver_gui import addHarmony, addHarmonyRules, solveProblem, specify_voice
+from core.solver import addHarmony, addHarmonyRules, solveProblem, specify_voice
 import core.config
 
 # Test 1: ii6 V7 I
@@ -295,7 +295,7 @@ def arg_handle(argv):
 
 if __name__ == '__main__':
   arg_handle(sys.argv)
-  problem = core.harmony_solver_gui.createProblem()
+  problem = core.solver.createProblem()
   if core.config.test_name != None:
     print "====== Running Test: ", core.config.test_name
     exec(core.config.test_name + "(problem)")
