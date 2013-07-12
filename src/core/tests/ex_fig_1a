@@ -1,0 +1,9 @@
+# ex_fig_1a: Tests the [Figures] section
+[Chords]
+# time, root, role, bassnote, modifiers...
+0, D, predominant, None, minor
+1, G, dominant, None, major
+2, C, tonic, None, major
+
+[Figures]
+s: D, D, C

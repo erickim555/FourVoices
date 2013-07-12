@@ -32,7 +32,7 @@ def solve(chords, figures):
     Input:
         list CHORDS: [Chord c, ...]
             Chords+harmonies at each time step.
-        list FIGURES: [(int time, str voice, int pitch), ...]
+        list FIGURES: [(int time, str voice, str note, int octave/None), ...]
             Optional specified notes that should be used.
     Output:
         Problem PROB, SOLUTIONS_ITER
@@ -48,7 +48,7 @@ def init_problem(problem, chords, figures):
     Input:
         Problem PROBLEM:
         list CHORDS:
-        list LINES:
+        list FIGURES:
     Output:
         Problem PROBLEM.
     """
@@ -127,7 +127,36 @@ def init_problem(problem, chords, figures):
             for voice in VOICE_PREFIXES:
                 problem.addConstraint(FullDiminishedRootConstraint(chord),
                                       [make_var(voice, t), make_var(voice, t+1)])
+    # 3.) Add any specified notes
+    problem = add_figure_constraints(problem, figures)
+    return problem
 
+def add_figure_constraints(problem, figures):
+    """ Adds relevant constraints to the Problem instance.
+    Input:
+        Problem PROBLEM:
+        list FIGURES: [(int time, str voice, str note, int octave/None), ...]
+    Output:
+        Problem PROBLEM.
+    """
+    def get_singer_range(voice):
+        return {'s': soprano_range,
+                'a': alto_range,
+                't': tenor_range,
+                'b': bass_range}[voice]
+    for (time, voice, note, octave) in figures:
+        var = make_var(voice, time)
+        if var not in problem._variables:
+            raise RuntimeError("(add_figure_constraints) Var {0} wasn't in problem._variables".format(var))
+        domain_new = []
+        note_num = pitchToNum(note)
+        if octave == None:
+            for pitch in get_singer_range(voice):
+                if pitch % 12 == note_num:
+                    domain_new.append(pitch)
+        else:
+            domain_new.append(note_num * octave)
+        problem.replaceVariable(var, domain_new)
     return problem
             
 def make_var(voice, time):
@@ -455,26 +484,7 @@ class HarmonySolver():
       except ValueError:
         raise ValueError , "Error in HarmonySolver._convertToConstraintForm() , %s" % voice
     return voice
-#def arg_handle(argv):
-#  for arg in argv:
-#    if (len(arg) > 5) and (arg[0:5] == "test="):
-#      core.config.test_name = arg[5:]
-#    if (len(arg) > 2) and (arg[0:2] == "n="):
-#      core.config.num_solutions = int(arg[2:])
-#    if (arg == "-d") or (arg == "-debug") : core.config.debug = 1
-#    if core.config.debugging_options.has_key(arg):
-#      core.config.debugging_options[arg] = 1
-#
-#if __name__ == '__main__':
-#  time1 = time.time()
-#  arg_handle(sys.argv)
-#  harm = createProblem()
-#  if core.config.test_name != None:
-#    print "====== Running Test: ", core.config.test_name
-#    exec("examples.harmonytests." + core.config.test_name + "(harm)")
-#  else:
-#    examples.harmonytests.test4(harm)
-#  print "Time (in seconds) to perform test: ", time.time() - time1
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("problem", help="Path to problem instance.")
@@ -485,33 +495,15 @@ problem instances.")
     
 def parse_problemfile(problemfile):
     """ Parses an input file containing a Harmony problem.
-    See the problem_template file for information about the expected
+    See the template file for information about the expected
     file format.
     Input:
         str PROBLEMFILE:
     Output:
         (list CHORDS, list FIGURES)
+    CHORDS: [Chord c, ...]
+    FIGURES: [(int t, str voice, str note, int octave/None), ...]
     """
-    def parse_chord(line):
-        try:
-            s = line.split(",")
-            time, root, role, bassnote = s[:4]
-            time, root, role, bassnote = int(time), root.strip().upper(), role.strip().lower(), bassnote.strip().upper()
-            if root in ("", "NONE", " "):
-                root = None
-            if role in ("", "none", " "):
-                role = None
-            if bassnote in ("", "NONE", " "):
-                bassnote = None
-            mods = [w.lower().strip() for w in s[4:]]
-            mods = [m for m in mods if m.lower() not in ('', 'none', ' ')]
-            chord = Chord(root, mods, time, bassNote=bassnote, role=role)
-            return chord
-        except:
-            return None
-    def parse_figure(line):
-        # TODO: Implement me
-        return None
     f = open(problemfile, 'r')
     is_chord, is_figures = False, False
     BEGIN_CHORD, BEGIN_FIGURES = "[Chords]", "[Figures]"
@@ -529,10 +521,76 @@ def parse_problemfile(problemfile):
             if chord != None:
                 chords.append(chord)
         elif is_figures:
-            figure = parse_figure(line)
-            if figure != None:
-                figures.append(figure)
+            # list FIGURE: (str voice, [(str voice, int octave/None)/None, ...])
+            figure_tup = parse_figure(line)
+            if figure_tup != None:
+                voice, notes = figure_tup
+                figure_ = []
+                for time, entry in enumerate(notes):
+                    if entry != None:
+                        note, octave = entry
+                        figure_.append((time, voice, note, octave))
+                figures.extend(figure_)
     return chords, figures
+
+def parse_chord(line):
+    """ Parses a line from the [Chords] section. Returns None if
+    the parsing fails.
+    """
+    try:
+        s = line.split(",")
+        time, root, role, bassnote = s[:4]
+        time, root, role, bassnote = int(time), root.strip().upper(), role.strip().lower(), bassnote.strip().upper()
+        if root in ("", "NONE", " "):
+            root = None
+        if role in ("", "none", " "):
+            role = None
+        if bassnote in ("", "NONE", " "):
+            bassnote = None
+        mods = [w.lower().strip() for w in s[4:]]
+        mods = [m for m in mods if m.lower() not in ('', 'none', ' ')]
+        chord = Chord(root, mods, time, bassNote=bassnote, role=role)
+        return chord
+    except:
+        return None
+
+def parse_figure(line):
+    """ Parses a line from the [Figures] section. Returns None if
+    the parsing fails.
+    Output:
+    (str VOICE, tuple FIGURE)
+        VOICE: one of 's', 'a', 't', 'b'
+        FIGURE: ((str note, int octave/None)/None, ...)
+
+    Example:
+    >>> parse_figure("s: A4, None, C")
+    ('s', [('A', 4), None, ('C', None)])
+    """
+    try:
+        voice = line[0].lower()
+        figure = []
+        if voice not in VOICE_PREFIXES:
+            raise Exception("Not a valid voice: {0}".format(voice))
+        line_ = line[2:].strip()
+        entries = [wd.strip().lower() for wd in line_.split(",")]
+        for entry in entries:
+            if entry.lower() == "none":    # Can be anything
+                figure.append(None)
+            else:
+                note = entry[0]
+                try:
+                    octave = int(entry[1:])
+                except ValueError:
+                    octave = None
+                if note not in NOTES:
+                    raise Exception("Not a valid note: {0}".format(note))
+                if octave != None and (octave < 0 or octave > 8):
+                    raise Exception("Octave too low/high: {0}{1}".format(note, octave))
+                figure.append((note.upper(), octave))
+        return voice, figure
+    except Exception:
+        traceback.print_exc()
+        return None
     
 def run_tests():
     pass
@@ -541,6 +599,7 @@ def main():
     args = parse_args()
     if args.run_tests:
         return run_tests()
+    # list FIGURES: [(str voice, [(str note, int octave/None)/None, ...]), ...]
     chords, figures = parse_problemfile(args.problem)
     print "(Info) Solving Harmony Problem"
     t = time.time()

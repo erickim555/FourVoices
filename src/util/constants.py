@@ -25,3 +25,6 @@ MOD_DIM_HALF = ("min7(b5)", "m7(b5)", "halfdim")
 MOD_DIM_FULL = ("dim7",)
 
 VOICE_PREFIXES = ("s", "a", "t", "b")
+
+NOTES = ("a", "b", "c", "d", "e", "f", "g",
+         "A", "B", "C", "D", "E", "F", "G")

@@ -28,9 +28,28 @@
 1, G, dominant, B2, 7
 2, C, tonic, C3, major
 
-# The 'Lines' section is signalled by the line:
-#     [Lines]
+# The 'Figures' section is signalled by the line:
+#     [Figures]
 # Here, specific notes can be specified. For instance, if you want the
 # soprano voice to follow a particular melody, that melody can be
 # inputted here.
-
+# The format is:
+#     <VOICE>: NOTE[octave],[...]
+# where <VOICE> can be one of:
+#     s -> soprano
+#     a -> alto
+#     t -> tenor
+#     b -> bass
+# Unspecified notes can be given by 'None', i.e.:
+#     s: D5, None, C5
+# The octave suffix can be omitted, if you don't care which
+# octave the note resides, i.e.:
+#     b: F, G, C
+# Finally: any 'missing' notes are assumed to be 'None', i.e.
+# the following is legal:
+#     s: D, B, C
+#     a: A
+#     b: F, D
+[Figures]
+s: D5, B5, C5
+b: None, None, C
