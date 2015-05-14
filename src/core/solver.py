@@ -52,28 +52,39 @@ def init_problem(problem, chords, figures):
     Output:
         Problem PROBLEM.
     """
-    # 1.) Add simple Chord constraints (unary)
-    chords_ = sorted(chords, key=lambda c: c.time)
-    for chord in chords_:
+    ''' 
+    (1) Add simple chord constraints (unary)
+      Each chord enforces that the voices (satb) must cover the chord
+      tones (ie root, third, fifth, etc).
+    '''
+    chords = sorted(chords, key=lambda c: c.time)
+    for chord in chords:
+        # Generate CSP vars and constraints for this chord
         t = chord.time
         vars_toadd = [make_var(voice, t) for voice in VOICE_PREFIXES]
+        # At time t, create CSP vars for S,A,T,B
         for i, var in enumerate(vars_toadd):
             voice = VOICE_PREFIXES[i]
             domain = get_singer_domain(voice, chord)
             problem.addVariable(var, domain)
-        # TODO: Fully remove the 2nd arg (harmonies) from SpecifyChordConstraint)
-        problem.addConstraint(SpecifyChordConstraint(chord, None), vars_toadd)
+        # Create CSP constraint for satb
+        problem.addConstraint(SpecifyChordConstraint(chord), vars_toadd)
         if chord.bassNote != None:
+            # Bass *must* cover this note
             problem.addConstraint(SetBassConstraint(chord), [make_var("b", t)])
 
-    # 2.) Add relational harmonic constraints
-    num_time_steps = len(chords_)
-    for t, chord in enumerate(chords_):
-      # Make sure that voices are at most an octave away from each other
+    '''
+    (2) Add relational harmonic constraints (2+ vars)
+      Defines rules that govern interactions between voices, ie
+      - voice spacing, no crossing, leaps, no-parallel-fifths, etc.
+    '''
+    num_time_steps = len(chords)
+    for t, chord in enumerate(chords):
+      # Voices are at most an octave away from each other
       problem.addConstraint(SpacingConstraint(), [make_var("s", t), make_var("a", t)])
       problem.addConstraint(SpacingConstraint(), [make_var("a", t), make_var("t", t)])
       problem.addConstraint(SpacingConstraint(), [make_var("t", t), make_var("b", t)])
-      # Make sure that voices don't cross each other
+      # Voices don't cross each other
       problem.addConstraint(CrossoverConstraint(), 
                             [make_var(v, t) for v in VOICE_PREFIXES])
       if t < (num_time_steps - 1):    # Mainly, if t != numTimeSteps    
@@ -288,7 +299,7 @@ class HarmonySolver():
     problem.addVariable(singers[2], self.getSingerDomain("t", chord))
     problem.addVariable(singers[3], self.getSingerDomain("b", chord))
     
-    problem.addConstraint(SpecifyChordConstraint(chord, self.harmonies) , tuple(singers))
+    problem.addConstraint(SpecifyChordConstraint(chord) , tuple(singers))
     if chord.bassNote != None:
       problem.addConstraint(SetBassConstraint(chord), ["b"+str(time)])
     ### BIG QUESTION: Why can't I say:
@@ -485,14 +496,6 @@ class HarmonySolver():
         raise ValueError , "Error in HarmonySolver._convertToConstraintForm() , %s" % voice
     return voice
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("problem", help="Path to problem instance.")
-    parser.add_argument("--run_tests", action="store_true",
-                        help="Runs the solver on a suite of built-in \
-problem instances.")
-    return parser.parse_args()
-    
 def parse_problemfile(problemfile):
     """ Parses an input file containing a Harmony problem.
     See the template file for information about the expected
@@ -504,7 +507,11 @@ def parse_problemfile(problemfile):
     CHORDS: [Chord c, ...]
     FIGURES: [(int t, str voice, str note, int octave/None), ...]
     """
-    f = open(problemfile, 'r')
+    try:
+        f = open(problemfile, 'r')
+    except IOError as e:
+        print "  Error opening harmony file: {0}".format(problemfile)
+        return None
     is_chord, is_figures = False, False
     BEGIN_CHORD, BEGIN_FIGURES = "[Chords]", "[Figures]"
     chords, figures = [], []
@@ -594,13 +601,26 @@ def parse_figure(line):
     
 def run_tests():
     pass
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem", help="Path to problem instance.")
+    parser.add_argument("--run_tests", action="store_true",
+                        help="Runs the solver on a suite of built-in \
+problem instances.")
+    return parser.parse_args()
     
 def main():
     args = parse_args()
     if args.run_tests:
         return run_tests()
     # list FIGURES: [(str voice, [(str note, int octave/None)/None, ...]), ...]
-    chords, figures = parse_problemfile(args.problem)
+    pair = parse_problemfile(args.problem)
+    if not pair:
+        print "  Exiting."
+        return 1
+    chords = pair[0]
+    figures = pair[1]
     print "(Info) Solving Harmony Problem"
     t = time.time()
     problem, solutions_iter = solve(chords, figures)

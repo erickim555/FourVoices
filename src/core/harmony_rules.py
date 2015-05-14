@@ -16,6 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+"""
+    ./core/harmony_rules.py
+Encodes each harmonic rule (ie no-parallel-fifths) as subclasses of
+the constraint.FunctionConstraint class.
+"""
+
 import sys, pdb
 
 from Note import *
@@ -33,11 +39,10 @@ class HarmonyConstraint(constraint.FunctionConstraint):
   def __repr__(self):
     return self.name
 
-
 class SpecifyChordConstraint(HarmonyConstraint):
-  def __init__(self, chord, harmonies):
+  def __init__(self, chord):
     name = "specifyChord_" + str(chord.time)
-    func = specifyChord(chord, harmonies)
+    func = specifyChord(chord)
     HarmonyConstraint.__init__(self, func, name)
 
 class SetBassConstraint(HarmonyConstraint):
@@ -115,10 +120,10 @@ class FullDiminishedRootConstraint(HarmonyConstraint):
 # This just makes sure that every note of the chord is present, it doesn't check for
 # doubled-thirds/fifths/etc.
 # Note that, for a tonic chord, the fifth may be omitted
-def specifyChord(chord, harmonies):
-  return (lambda a, b, c, d: __allNotes__(a, b, c, d, chord, harmonies))
+def specifyChord(chord):
+  return (lambda a, b, c, d: __allNotes__(a, b, c, d, chord))
   
-def __allNotes__(a, b, c, d, chord, harmonies):
+def __allNotes__(a, b, c, d, chord):
   history = []
   chordTones = chord.getChordTones_nums()
   for x in (a, b, c, d):
