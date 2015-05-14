@@ -15,12 +15,8 @@ Table of Contents
 FourVoices provides an easy way to generate correct four-part 
 harmonizations of any harmonic progression. It features a UI, audio 
 playback, and the ability to export the vocal parts to PDF. For 
-Soprano, Alto, Tenor, and Bass voices. Tremendously useful for music 
-theory students. 
-
-FourVoices is primarily written by a musician (with a degree in 
-Computer Science), whose love for Music Theory has baffled many a
-friend and foe alike.
+Soprano, Alto, Tenor, and Bass voices. May be particularly useful for
+music theory students. 
 
 FourVoices (as of v.0.23) uses the GNU GPL (ver3) license.
 
@@ -34,23 +30,20 @@ Since v0.23, FourVoices has been living on GitHub at:
     
 Feel free to clone the repository, make pull requests, etc.
 
-If you wish to view the GitHub page, go to:
-
-    https://github.com/erickim555/FourVoices/
-
 ========================
 2. History
 ========================
 
-The code base was originally written by erickim555 back in Winter of
+The code base was originally written by Eric back in Winter of
 2009, while he was an undergraduate at the University of California, 
-Berkeley. erickim555 managed to get basic solver infrastructure, a
-terrible UI, and basic MIDI playback support working before college,
-teaching, and research pushed this project far to the wayside in 2010.
+Berkeley. Eric managed to get basic solver infrastructure, a
+(terrible) UI, and basic MIDI playback support working. However,
+coursework, teaching, and research pushed this project far to the
+wayside.
 
 Since then, erickim555 has earned a Computer Science degree (2011)
-and, more importantly, a great deal of experience. erickim555 had
-been meaning to make this project open-source for years now, and 
+and, more importantly, a great deal of experience. Eric has been
+meaning to make this project open-source for years now, and 
 finally in the Spring of 2012 he's doing so. 
 
 erickim555 apologizes in advance for the perilous code base. He wishes
