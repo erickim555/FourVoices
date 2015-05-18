@@ -48,23 +48,23 @@ import Core_Tree.config
 # y = "S, A, T, B"
 # Order by "s3, s2, s1, a3, ..., t3, ..., b3, ..."
 def myComparator(x, y):
-  x1 = __voiceToNum__(x)
-  y1= __voiceToNum__(y)
-  if x1 > y1: return 1
-  if x1 == y1:
-    x_num = int(x[1:])
-    y_num = int(y[1:])
-    return x_num.__cmp__(y_num)
-  # x1 < y1
-  return -1
+    x1 = __voiceToNum__(x)
+    y1= __voiceToNum__(y)
+    if x1 > y1: return 1
+    if x1 == y1:
+        x_num = int(x[1:])
+        y_num = int(y[1:])
+        return x_num.__cmp__(y_num)
+    # x1 < y1
+    return -1
 
 # translates "S, A, T, B" to "0, 1, 2, 3"
 def __voiceToNum__(voice):
-  lowerCase = voice.lower() # Just in case we get something like "S3" versus "s3"
-  return {"s": 0,
-          "a": 1,
-          "t": 2,
-          "b": 3}[lowerCase[0]] # Grab first letter
+    lowerCase = voice.lower() # Just in case we get something like "S3" versus "s3"
+    return {"s": 0,
+            "a": 1,
+            "t": 2,
+            "b": 3}[lowerCase[0]] # Grab first letter
 
 __all__ = ["Problem", "Variable", "Domain", "Unassigned",
            "Solver", "BacktrackingSolver", "RecursiveBacktrackingSolver",
@@ -166,7 +166,7 @@ class Problem(object):
         if not domain:
             raise ValueError, "Domain is empty"
         self._variables[variable] = domain
-        
+
     def replaceVariable(self, variable, domain):
         """
         Replace a variable to the problem
@@ -197,7 +197,7 @@ class Problem(object):
         if not domain:
             raise ValueError, "Domain is empty"
         self._variables[variable] = domain
-        
+
     def addVariables(self, variables, domain):
         """
         Add one or more variables to the problem
@@ -232,7 +232,7 @@ class Problem(object):
         >>> problem.addVariables(["a", "b"], [1, 2, 3])
         >>> problem.addConstraint(lambda a, b: b == a+1, ["a", "b"])
         >>> solutions = problem.getSolutions()
-        >>> 
+        >>>
 
         @param constraint: Constraint to be included in the problem
         @type  constraint: instance a L{Constraint} subclass or a
@@ -507,11 +507,11 @@ class BacktrackingSolver(Solver):
         harmonies = Core_Tree.config.harmonies
         partial_grades = {}
         #####
-        
+
         forwardcheck = self._forwardcheck
         assignments = {}
         queue = []
-        while True:  
+        while True:
             # Mix the Degree and Minimum Remaing Values (MRV) heuristics
             lst = [(-len(vconstraints[variable]),
                     len(domains[variable]), variable) for variable in domains]
@@ -522,7 +522,7 @@ class BacktrackingSolver(Solver):
                     variable = item[-1]
                     values = domains[variable][:]
                     if forwardcheck:
-                      
+
                         pushdomains = [domains[x] for x in domains
                                                    if x not in assignments and
                                                       x != variable]
@@ -532,24 +532,24 @@ class BacktrackingSolver(Solver):
             else:
                 # No unassigned variables. We've got a solution. Go back
                 # to last variable, if there's one.
-                
+
                 ##### Edit by Eric #####
                 ##### An attempt to prune the search space #####
                 solution = assignments.copy()
                 if Core_Tree.config.debug == 1:      # grade_debug returns a tuple of things
-                  solution_grade = grade_debug(solution, chords, harmonies)
-                  if solution_grade[0] >= best_grade:
-                    yield solution
-                    best_grade = solution_grade[0]
+                    solution_grade = grade_debug(solution, chords, harmonies)
+                    if solution_grade[0] >= best_grade:
+                        yield solution
+                        best_grade = solution_grade[0]
                 else:                           # grade returns JUST the grade
-                  solution_grade = grade(solution, chords, harmonies)
-                  if solution_grade >= best_grade:
-                    yield solution
-                    best_grade = solution_grade
-                    
-                ##### END Edit by Eric #####  
+                    solution_grade = grade(solution, chords, harmonies)
+                    if solution_grade >= best_grade:
+                        yield solution
+                        best_grade = solution_grade
+
+                ##### END Edit by Eric #####
                 ############################
-                
+
                 if not queue:
                     return
                 variable, values, pushdomains = queue.pop()
@@ -574,7 +574,7 @@ class BacktrackingSolver(Solver):
                         return
 
                 # Got a value. Check it.
-                
+
                 ### EDIT BY ERIC ###
                 # In an attempt to prune the solution space (which may be extremely large)
                 # use a heuristic to evaluate the current assignment, and determine whether
@@ -583,42 +583,42 @@ class BacktrackingSolver(Solver):
                 assignments[variable] = values.pop()
                 assignments_tuple = tuple(assignments)
                 if not(partial_grades.has_key(assignments_tuple)):
-                  if Core_Tree.config.debug == 1:
-                    partial_assignment_grade = partial_grade(assignments, chords, harmonies)
-                  else:
-                    partial_assignment_grade = partial_grade(assignments, chords, harmonies)
-                  partial_grades[assignments_tuple] = partial_assignment_grade
+                    if Core_Tree.config.debug == 1:
+                        partial_assignment_grade = partial_grade(assignments, chords, harmonies)
+                    else:
+                        partial_assignment_grade = partial_grade(assignments, chords, harmonies)
+                    partial_grades[assignments_tuple] = partial_assignment_grade
                 else:
-                  partial_assignment_grade = partial_grades[assignments_tuple]
+                    partial_assignment_grade = partial_grades[assignments_tuple]
                 if (partial_assignment_grade != None) and ((partial_assignment_grade - best_grade) < -10):
-                  
-                  del assignments[variable]
-                  while queue:
-                      variable, values, pushdomains = queue.pop()
-                      if pushdomains:
-                          for domain in pushdomains:
-                              domain.popState()
-                      if values:
-                          break
-                      del assignments[variable]
-                  else:
-                      return
+
+                    del assignments[variable]
+                    while queue:
+                        variable, values, pushdomains = queue.pop()
+                        if pushdomains:
+                            for domain in pushdomains:
+                                domain.popState()
+                        if values:
+                            break
+                        del assignments[variable]
+                    else:
+                        return
                 else:   # The current path is deemed "OK" by our heuristic, so continue
-                  if pushdomains:
-                      for domain in pushdomains:
-                          domain.pushState()
-  
-                  for constraint, variables in vconstraints[variable]:
-                      if not constraint(variables, domains, assignments,
-                                        pushdomains):
-                          # Value is not good.
-                          break
-                  else:
-                      break
-  
-                  if pushdomains:
-                      for domain in pushdomains:
-                          domain.popState()
+                    if pushdomains:
+                        for domain in pushdomains:
+                            domain.pushState()
+
+                    for constraint, variables in vconstraints[variable]:
+                        if not constraint(variables, domains, assignments,
+                                          pushdomains):
+                            # Value is not good.
+                            break
+                    else:
+                        break
+
+                    if pushdomains:
+                        for domain in pushdomains:
+                            domain.popState()
 
             # Push state before looking for next variable.
             queue.append((variable, values, pushdomains))
@@ -863,7 +863,7 @@ class Domain(list):
     def pushState(self):
         """
         Save current domain state
-        
+
         Variables hidden after that call are restored when that state
         is popped from the stack.
         """
@@ -901,7 +901,7 @@ class Domain(list):
 class Constraint(object):
     """
     Abstract base class for constraints
-    """ 
+    """
 
     def __call__(self, variables, domains, assignments, forwardcheck=False):
         """
@@ -1024,7 +1024,7 @@ class FunctionConstraint(Constraint):
     >>> problem.getSolution()
     {'a': 1, 'b': 2}
     """#"""
- 
+
     def __init__(self, func, assigned=True):
         """
         @param func: Function wrapped and queried for constraint logic
@@ -1531,4 +1531,3 @@ class SomeNotInSetConstraint(Constraint):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-

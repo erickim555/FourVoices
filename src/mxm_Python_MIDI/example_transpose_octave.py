@@ -2,15 +2,15 @@ from MidiOutFile import MidiOutFile
 from MidiInFile import MidiInFile
 
 """
-This is an example of the smallest possible type 0 midi file, where 
+This is an example of the smallest possible type 0 midi file, where
 all the midi events are in the same track.
 """
 
 
 class Transposer(MidiOutFile):
-    
+
     "Transposes all notes by 1 octave"
-    
+
     def _transp(self, ch, note):
         if ch != 9: # not the drums!
             note += 12
@@ -22,8 +22,8 @@ class Transposer(MidiOutFile):
     def note_on(self, channel=0, note=0x40, velocity=0x40):
         note = self._transp(channel, note)
         MidiOutFile.note_on(self, channel, note, velocity)
-        
-        
+
+
     def note_off(self, channel=0, note=0x40, velocity=0x40):
         note = self._transp(channel, note)
         MidiOutFile.note_off(self, channel, note, velocity)
@@ -37,4 +37,3 @@ midi_out = Transposer(out_file)
 in_file = 'test/midifiles/tennessee_waltz.mid'
 midi_in = MidiInFile(midi_out, in_file)
 midi_in.read()
-

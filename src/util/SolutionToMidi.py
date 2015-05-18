@@ -33,10 +33,10 @@ def playSolution(solution):
             m.addNote(pitch[0:-1], octave, time, 300)
             i += 1
         m.finalize()
-        
+
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load("tempfile.mid")
-        pygame.mixer.music.play() 
+        pygame.mixer.music.play()
     except:
         print "SolutionToMidi.playSolution(1) failed. Aborting playback."

@@ -10,8 +10,8 @@ class MidiToText(MidiOutStream):
 
     #############################
     # channel events
-    
-    
+
+
     def channel_message(self, message_type, channel, data):
         """The default event handler for channel messages"""
         print 'message_type:%X, channel:%X, data size:%X' % (message_type, channel, len(data))
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     # get data
     test_file = 'test/midifiles/minimal.mid'
     f = open(test_file, 'rb')
-    
+
     # do parsing
     from MidiInFile import MidiInFile
     midiIn = MidiInFile(MidiToText(), f)

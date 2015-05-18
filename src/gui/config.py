@@ -3,7 +3,7 @@ Created on Jan 4, 2010
 
 @author: Sforzando
 '''
-home_dir = None 
+home_dir = None
 
 staff_pos_x = 40
 staff_pos_y = 40

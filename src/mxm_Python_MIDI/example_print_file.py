@@ -1,10 +1,10 @@
 """
-This is an example that uses the MidiToText eventhandler. When an 
+This is an example that uses the MidiToText eventhandler. When an
 event is triggered on it, it prints the event to the console.
 
 It gets the events from the MidiInFile.
 
-So it prints all the events from the infile to the console. great for 
+So it prints all the events from the infile to the console. great for
 debugging :-s
 """
 

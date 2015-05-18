@@ -175,7 +175,7 @@ class Problem(object):
         >>> problem.addVariables(["a", "b"], [1, 2, 3])
         >>> problem.addConstraint(lambda a, b: b == a+1, ["a", "b"])
         >>> solutions = problem.getSolutions()
-        >>> 
+        >>>
 
         @param constraint: Constraint to be included in the problem
         @type  constraint: instance a L{Constraint} subclass or a
@@ -446,8 +446,8 @@ class BacktrackingSolver(Solver):
     def getSolutionIter(self, domains, constraints, vconstraints):
         forwardcheck = self._forwardcheck
         assignments = {}
-        
-        
+
+
         queue = []
 
         while True:
@@ -757,7 +757,7 @@ class Domain(list):
     def pushState(self):
         """
         Save current domain state
-        
+
         Variables hidden after that call are restored when that state
         is popped from the stack.
         """
@@ -795,7 +795,7 @@ class Domain(list):
 class Constraint(object):
     """
     Abstract base class for constraints
-    """ 
+    """
 
     def __call__(self, variables, domains, assignments, forwardcheck=False):
         """
@@ -918,7 +918,7 @@ class FunctionConstraint(Constraint):
     >>> problem.getSolution()
     {'a': 1, 'b': 2}
     """#"""
- 
+
     def __init__(self, func, assigned=True):
         """
         @param func: Function wrapped and queried for constraint logic
@@ -1425,4 +1425,3 @@ class SomeNotInSetConstraint(Constraint):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-

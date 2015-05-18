@@ -30,12 +30,12 @@ class SolverTester(unittest.TestCase):
     def testOne(self):
         core.config.chords = TimeList()
         core.config.harmonies = TimeList()
-        harm = createProblem()  
+        harm = createProblem()
         addHarmony(harm, Chord("C", None, 0), "I")
         addHarmonyRules(harm)
         solutions = solveProblem(harm)
         self.assertEqual(len(solutions), 42)
-    
+
     def testTwo(self):
         core.config.chords = TimeList()
         core.config.harmonies = TimeList()
@@ -45,7 +45,7 @@ class SolverTester(unittest.TestCase):
         addHarmonyRules(harm)
         solutions = solveProblem(harm)
         self.assertEqual(len(solutions), 438)
-    
+
     def testSequence(self):
         core.config.chords = TimeList()
         core.config.harmonies = TimeList()
@@ -54,7 +54,7 @@ class SolverTester(unittest.TestCase):
         A7 = Chord("A", ["7"], 1, "E")
         dmin = Chord("D", ["min"], 2, "D")
         G7 = Chord("G", ["7"], 3, "D")
-        C = Chord("C", None, 4, "C")  
+        C = Chord("C", None, 4, "C")
         addHarmony(harm, emin, "iii")
         addHarmony(harm, A7, "V43/ii")
         addHarmony(harm, dmin, "ii")
@@ -76,13 +76,13 @@ class SolverTester(unittest.TestCase):
         firstSolution = solutions[0][1]
         firstSolution = [x[1] for x in firstSolution]
         self.assertTrue(self.solutionHasNotes(firstSolution, ["G#", "B", "D", "F"]))
-    
+
     def solutionHasNotes(self, solution, notes):
         solution = [ numToPitch(x) for x in solution ]
         difference = [ x for x in notes if x not in solution ]
         print "MOOSE", solution, difference
         return (len(difference) == 0)
-        
+
 #    def testchoice(self):
 #        element = random.choice(self.seq)
 #        self.assert_(element in self.seq)

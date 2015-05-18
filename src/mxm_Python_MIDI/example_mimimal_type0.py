@@ -1,7 +1,7 @@
 from MidiOutFile import MidiOutFile
 
 """
-This is an example of the smallest possible type 0 midi file, where 
+This is an example of the smallest possible type 0 midi file, where
 all the midi events are in the same track.
 """
 
@@ -10,7 +10,7 @@ midi = MidiOutFile(out_file)
 
 # non optional midi framework
 midi.header()
-midi.start_of_track() 
+midi.start_of_track()
 
 
 # musical events

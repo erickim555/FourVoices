@@ -1,7 +1,7 @@
 from MidiToText import MidiToText
 
 """
-This is an example that uses the MidiToText eventhandler. When an 
+This is an example that uses the MidiToText eventhandler. When an
 event is triggered on it, it prints the event to the console.
 """
 
@@ -9,7 +9,7 @@ midi = MidiToText()
 
 # non optional midi framework
 midi.header()
-midi.start_of_track() 
+midi.start_of_track()
 
 
 # musical events
