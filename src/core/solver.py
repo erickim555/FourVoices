@@ -16,6 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+'''
+  ./src/core/solver.py
+
+Contains the main routines that actually solves the harmonization
+problem. Involves:
+    - Creation of problem instances
+    - Solving problem instances
+
+Main functions:
+  init_problem()
+  solve()
+  
+Also defines a command-line interface (CLI).  
+'''
+
 import sys, os, time, pdb, traceback, argparse, itertools
 
 import config, Note
@@ -27,19 +42,15 @@ from Grader.grader import grade, grade_debug
 from Data_Structures.dataStructs import TimeList
 from util.constants import *
 
-def solve(chords, figures):
+def solve(problem):
     """ Solves an input harmonization problem.
-    Input:
-        list CHORDS: [Chord c, ...]
-            Chords+harmonies at each time step.
-        list FIGURES: [(int time, str voice, str note, int octave/None), ...]
-            Optional specified notes that should be used.
+    INPUT:
+      Problem problem
     Output:
-        Problem PROB, SOLUTIONS_ITER
+        SOLUTIONS_ITER
     """
-    problem = init_problem(constraint.Problem(), chords, figures)
     solutions_iter = problem.getSolutionIter()
-    return problem, solutions_iter        
+    return solutions_iter        
 
 def init_problem(problem, chords, figures):
     """ Initializes the CSP Problem by adding all constraints
@@ -106,18 +117,20 @@ def init_problem(problem, chords, figures):
         voice_pairs = []
         singer_array = []
         history = []
-        for singer in ("s", "a", "t", "b"):
-            for singer2 in ("s", "a", "t", "b"):
-              if (singer != singer2) and ((singer, singer2) not in history):
-                singer_array.append((singer+"_"+str(t), singer+"_"+str(t+1), singer2+"_"+str(t), singer2+"_"+str(t+1)))
-                history.append((singer2, singer))
-        for i in range(len(singer_array)):
+        for v1 in VOICE_PREFIXES:
+            for v2 in VOICE_PREFIXES:
+                if (v1 != v2) and ((v1, v2) not in history):
+                    singer_array.append(
+                        (make_var(v1,t),make_var(v1,t+1),
+                         make_var(v2,t),make_var(v2,t+1)))
+                    history.append((v2, v1))
+        for i in xrange(len(singer_array)):
             problem.addConstraint(ParallelFifthConstraint(), singer_array[i])
             problem.addConstraint(ParallelOctaveConstraint(), singer_array[i])
         # Add behavior for soprano/bass relationship (i.e no hidden 5th, hidden octave)
-        var_ = (make_var("s", t), make_var("s", t+1),
-                make_var("b", t), make_var("b", t+1))
-        problem.addConstraint(HiddenMotionOuterConstraint(), var_)
+        problem.addConstraint(HiddenMotionOuterConstraint(),
+                              (make_var("s", t), make_var("s", t+1),
+                               make_var("b", t), make_var("b", t+1)))
         # Add behavior for sevenths
         if chord.getSeventh__() != None:
           for voice in VOICE_PREFIXES:
@@ -143,7 +156,8 @@ def init_problem(problem, chords, figures):
     return problem
 
 def add_figure_constraints(problem, figures):
-    """ Adds relevant constraints to the Problem instance.
+    """ Adds CSP constraints to the Problem instance to handle any
+    specified notes.
     Input:
         Problem PROBLEM:
         list FIGURES: [(int time, str voice, str note, int octave/None), ...]
@@ -199,6 +213,23 @@ def get_singer_domain(voice, chord):
     return domain
       
 class HarmonySolver():
+"""
+Class that UI uses. Sort of a wraper class for constraint.Problem().
+UI does this:
+  As user adds chords/voices, the HarmonySolver's internal datastructs
+  are updated. Then, when user clicks "solve", the HarmonySolver its
+  chords and harmonies lists, adds the relevant vars/constraints to
+  its constraint.Problem(), then runs the solver.
+  
+This is basically a complete rewrite of the above code that creates a
+problem instance from the CLI.
+
+TODO: Refactor this class to only have this functionality:
+    add_chord()
+    add_note()
+    solve()
+        This calls init_problem() and solve().
+"""
   
   def __init__(self):
     self.problem = constraint.Problem()
@@ -621,11 +652,16 @@ def main():
         return 1
     chords = pair[0]
     figures = pair[1]
+    print "(Info) Initializing harmony problem..."
+    t = time.time()
+    problem = init_problem(constraint.Problem(), chords, figures)
+    print "(Info) Finished initialization ({0:.4f}s)".format(time.time() - t)
     print "(Info) Solving Harmony Problem"
     t = time.time()
-    problem, solutions_iter = solve(chords, figures)
+    solutions_iter = solve(problem)
     dur = time.time() - t
     print "(Info) Done Solving ({0:.4f}s)".format(dur)
+    print "  Displaying solutions:"
     flag_continue = False
     solutions = []
     for sol in solutions_iter:
