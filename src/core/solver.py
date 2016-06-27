@@ -630,7 +630,7 @@ def parse_figure(line):
         return None
 
 def run_tests():
-    pass
+    print("WARNING: --run_tests not set up yet.")
 
 def parse_args():
     parser = argparse.ArgumentParser()

@@ -55,12 +55,12 @@ menu = Menu(root)
 root.config(menu=menu)
 file_menu = Menu(menu)
 menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Save...", command=None)
-file_menu.add_command(label="Open...", command=None)
+#file_menu.add_command(label="Save...", command=None)
+#file_menu.add_command(label="Open...", command=None)
 
 help_menu = Menu(menu)
 menu.add_cascade(label="Help", menu=help_menu)
-help_menu.add_command(label="About..." , command=None)
+#help_menu.add_command(label="About..." , command=None)
 
 """  Adding Hotkeys  """
 

@@ -81,6 +81,16 @@ If you're in Windows, double-click the 'main.py' file.
 If you're in Unix, simply do:
     $ python main.py
 
+There is also a command-line interface (CLI) available in the core/
+subdirectory:
+
+    $ cd core/
+    $ python solver.py PROBLEM
+
+PROBLEM is the path to a harmonic problem - see core/tests/TEMPLATE
+for an explanation on the file format.
+Additionally, core/tests/ contains example harmonic problems.
+
 ========================
 5. Contact
 ========================

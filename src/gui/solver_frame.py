@@ -176,4 +176,7 @@ class SolutionsResultWindow(Toplevel):
         if len(harmonySolver.solutions) == 0:
             return
         grade, solution = harmonySolver.solutions[self.solverFrame.sol_index]
-        util.SolutionToMidi.playSolution(solution)
+        status = util.SolutionToMidi.playSolution(solution)
+        if not status:
+            tkMessageBox.showwarning("MIDI playback not supported.",
+                                     "MIDI playback not supported. Is pygame and mxm_Python_MIDI correctly installed?")

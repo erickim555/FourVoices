@@ -1,5 +1,10 @@
 from core.Note import *
 import copy
+"""
+Functionality to grade the quality of particular harmonizations.
+In other words, some harmonizations are more pleasing than others.
+"""
+
 # =============== Legend ==============
 # =====================================
 # leap_type1 := it is bad to leap up to a leading tone, since it resolves in the same direction as the leap

@@ -38,5 +38,7 @@ def playSolution(solution):
         pygame.mixer.init()
         pygame.mixer.music.load("tempfile.mid")
         pygame.mixer.music.play()
+        return True
     except:
         print "SolutionToMidi.playSolution(1) failed. Aborting playback."
+        return False
