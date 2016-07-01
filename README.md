@@ -11,8 +11,8 @@
 
 ## 1. About
 
-FourVoices automatically generates correct four-part harmonizations
-(Soprano, alto, tenor, bass) for any harmonic chord progression.
+FourVoices is an automatic music generator for four-part harmonies
+(Soprano, alto, tenor, bass).
 May be particularly useful for music theory students, eg for four-part
 writing homework assignments.
 
@@ -30,7 +30,7 @@ FourVoices (as of v.0.23) uses the GNU GPL (ver3) license.
 
 Since v0.23, FourVoices has been living on GitHub at:
     
-[http://erickim555.github.com/FourVoices/](http://erickim555.github.com/FourVoices/)
+[https://github.com/erickim555/FourVoices](https://github.com/erickim555/FourVoices)
     
 Feel free to clone the repository, make pull requests, etc.
 
