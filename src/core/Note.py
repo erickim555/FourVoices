@@ -29,136 +29,92 @@ from util.constants import *
 # noteValue  = 86 :  B8
 # noteValue  = 87 :  C8
 # =========================================================================
+# NEW: Conform to MIDI standard
+#   https://en.wikipedia.org/wiki/Musical_note#Note_designation_in_accordance_with_octave_name
+# noteValue  = 0 :  C-1    (that's a minus)
+# noteValue  = 1 :  C#-1
+# ...
+# noteValue  = 11 : B-1
+# noteValue  = 12 : C0
+# noteValue  = 13 : C#0
+# ...
+# noteValue  = 59 : B3
+# noteValue  = 60 : C4
+# =========================================================================
 
 # pitch := " < Letter > < Octave > "
-# Example: pitchToNum("A5") = 60
-def pitchToNum_absolute(pitch):
-    octave = int(pitch[-1])
-    pitch = string.upper( pitch[0] )
-    if pitch == "A":
-        return 0 + (12 * octave)
-    if (pitch == "A#") or (pitch == "Bb"):
-        return 1 + (12 * octave)
-    if (pitch == "B") or (pitch == "Cb"):
-        return 2 + (12 * octave)
-    if (pitch == "C"):
-        return 3 + (12 * octave)
-    if (pitch == "C#") or (pitch == "Db"):
-        return 4 + (12 * octave)
-    if (pitch == "D"):
-        return 5 + (12 * octave)
-    if (pitch == "D#") or (pitch == "Eb"):
-        return 6 + (12 * octave)
-    if (pitch == "E") or (pitch == "Fb"):
-        return 7 + (12 * octave)
-    if (pitch == "F"):
-        return 8 + (12 * octave)
-    if (pitch == "F#") or (pitch == "Gb"):
-        return 9 + (12 * octave)
-    if (pitch == "G"):
-        return 10 + (12 * octave)
-    if (pitch == "G#") or (pitch == "Ab"):
-        return 11 + (12 * octave)
-    else:
-        print "Error - invalid pitch passed, returning 0"
-        return 0
+# Example: pitchToNum("A5") = 81
+# B1 -> 11 + (12 * (2)) = 11 + 24 = 35
+def pitchToNum_absolute(pitch_in):
+    octave = int(pitch_in[-1])
+    pitch = string.upper( pitch_in[0] )
+    if pitch_in[1] in ('#', "b"):
+        pitch = pitch + pitch_in[1]
+    # Construct map_
+    map_ = dict(zip(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A",
+                "A#", "B"],
+               range(0,12)))
+    synonyms = {"Db": "C#", "Eb": "D#", "Fb": "E", "Gb":"F#", "Ab":"G#",
+                "Bb": "A#", "Cb": "B",
+                "E#": "F", "B#": "C"}
+    # Handle flat<->sharp aliases
+    for (k,v) in synonyms.iteritems():
+        map_[k] = map_[v]
+    offset = 0
+    if pitch == "Cb":
+        offset = -12
+    elif pitch == "B#":
+        offset = 12
+    return map_[pitch] + (12 * (octave + 1)) + offset
 
 # pitch := <letter>
-def pitchToNum(pitch):
-    pitch = string.upper( pitch )
-    if pitch == "A":
-        return 0
-    if (pitch == "A#") or (pitch == "Bb"):
-        return 1
-    if (pitch == "B") or (pitch == "Cb"):
-        return 2
-    if (pitch == "C"):
-        return 3
-    if (pitch == "C#") or (pitch == "Db"):
-        return 4
-    if (pitch == "D"):
-        return 5
-    if (pitch == "D#") or (pitch == "Eb"):
-        return 6
-    if (pitch == "E") or (pitch == "Fb"):
-        return 7
-    if (pitch == "F"):
-        return 8
-    if (pitch == "F#") or (pitch == "Gb"):
-        return 9
-    if (pitch == "G"):
-        return 10
-    if (pitch == "G#") or (pitch == "Ab"):
-        return 11
-    else:
-        print "Error - invalid pitch passed, returning 0"
-        return 0
+def pitchToNum(pitch_in):
+    pitch = string.upper( pitch_in[0] )
+    if (len(pitch_in) > 1) and (pitch_in[1] in ("#", "b")):
+        pitch += pitch_in[1]
+    # Construct map_
+    map_ = dict(zip(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A",
+                "A#", "B"],
+               range(0,12)))
+    synonyms = {"Db": "C#", "Eb": "D#", "Fb": "E", "Gb":"F#", "Ab":"G#",
+                "Bb": "A#", "Cb": "B",
+                "E#": "F", "B#": "C"}
+    # Handle flat<->sharp aliases
+    for (k,v) in synonyms.iteritems():
+        map_[k] = map_[v]
+    return map_[pitch]
 
 # num := number representing ABSOLUTE pitch
-# i.e  numToPitch(13) = A#1
-def numToPitch_absolute(num):
-    octave = num / 12
+# i.e  numToPitch(34) = A#1
+# numToPitch(35) -> B1
+def numToPitch_absolute(num, delim=''):
+    octave = (num / 12) - 1
     num = num % 12
-
-    if num == 0:
-        return "A"+str(octave)
-    if (num == 1):
-        return "A#"+str(octave)
-    if (num == 2):
-        return "B"+str(octave)
-    if (num == 3):
-        return "C"+str(octave)
-    if (num == 4):
-        return "C#"+str(octave)
-    if (num == 5):
-        return "D"+str(octave)
-    if (num == 6):
-        return "D#"+str(octave)
-    if (num == 7):
-        return "E"+str(octave)
-    if (num == 8):
-        return "F"+str(octave)
-    if (num == 9):
-        return "F#"+str(octave)
-    if (num == 10):
-        return "G"+str(octave)
-    if (num == 11):
-        return "G#"+str(octave)
-    else:
-        print "Error - invalid num passed, returning A."
-        return "A0"
+    pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+    pitch = pitches[num]
+    return pitch + delim + str(octave)
 
 # num := number representing pitch
 # i.e  numToPitch(13) = A#
 def numToPitch (num):
     num = num % 12
-    if num == 0:
-        return "A"
-    if (num == 1):
-        return "A#"
-    if (num == 2):
-        return "B"
-    if (num == 3):
-        return "C"
-    if (num == 4):
-        return "C#"
-    if (num == 5):
-        return "D"
-    if (num == 6):
-        return "D#"
-    if (num == 7):
-        return "E"
-    if (num == 8):
-        return "F"
-    if (num == 9):
-        return "F#"
-    if (num == 10):
-        return "G"
-    if (num == 11):
-        return "G#"
+    pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+    return pitches[num]
+
+def pitchInfo(pitch):
+    """ Splits up pitch into note, octave.
+    INPUT:
+      string pitch: "A5", "C#2"
+    OUTPUT:
+      (string note, int octave)
+    """
+    note = pitch[0]
+    if pitch[1] == '#':
+        note = note + "#"
+        octave = int(pitch[2:])
     else:
-        print "Error - invalid num passed, returning A."
-        return "A0"
+        octave = int(pitch[1:])
+    return (note, octave)
 
 #  Class Chord
 #

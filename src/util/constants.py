@@ -5,10 +5,12 @@ Created on May 25, 2010
 '''
 
 mus_range = range(0, 87)
-soprano_range = range(51, 66)     # C4 -> C5
-alto_range = range(46, 66)        # G3 -> F5
-tenor_range =  range(39, 51)      # C3 -> A4
-bass_range = range(32, 51)        # F2 -> E4
+# ranges from:
+#   https://en.wikipedia.org/wiki/Vocal_range
+soprano_range = range(60, 84)     # C4 -> C6
+alto_range = range(57, 81)        # A3 -> A5
+tenor_range =  range(48, 72)      # C3 -> C5
+bass_range = range(40, 64)        # E2 -> E4
 
 TONIC = "tonic"
 SUBDOMINANT = "subdominant"

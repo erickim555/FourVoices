@@ -26,7 +26,7 @@ from gui.solver_frame_aux import SolverFrameAux
 from gui.solver_frame import SolverFrame
 
 root = Tk()
-root.title("Automatic Four-Part Harmony Solver")
+root.title("FourVoices: Automatic Four-Part Harmony Solver")
 
 """
 This is where the magic happens!!!

@@ -236,6 +236,13 @@ class HarmonySolver():
         self.chords = TimeList()
         self.harmonies = TimeList()
         self.num_solutions = 100000
+        # list solutions:
+        #   solutions[i] -> ["<singer><time>", int pitchnum]
+        #   will be sorted in the following way:
+        #     [['s0',int],['s1',int],...,['sN',int],
+        #      ['a0',int],['a1',int],...,['aN',int],
+        #      ['t0',int],['t1',int],...,['tN',int],
+        #      ['b0',int],['b1',int],...,['bN',int]]
         self.solutions = []
 
     # x = "S, A, T, B"

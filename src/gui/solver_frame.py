@@ -4,6 +4,7 @@ Created on Jan 4, 2010
 @author: Sforzando
 '''
 #from Tkinter import *
+import pdb
 from util.mtTkinter import *
 import tkFont
 import tkMessageBox
@@ -11,6 +12,8 @@ import tkSimpleDialog
 import core.solver
 import gui.config
 import util.SolutionToMidi
+import playback.playSolution
+import util.constants
 from Data_Structures.dataStructs import TimeList
 
 class SolveThread(threading.Thread):
@@ -176,7 +179,35 @@ class SolutionsResultWindow(Toplevel):
         if len(harmonySolver.solutions) == 0:
             return
         grade, solution = harmonySolver.solutions[self.solverFrame.sol_index]
-        status = util.SolutionToMidi.playSolution(solution)
+        # solution is a list: list notes
+        #   where notes[i] is: ["<singer><time>", int pitchnum]
+        display_solution(solution)
+        status = playback.playSolution.playSolution(solution)
+        #status = util.SolutionToMidi.playSolution(solution)
         if not status:
             tkMessageBox.showwarning("MIDI playback not supported.",
-                                     "MIDI playback not supported. Is pygame and mxm_Python_MIDI correctly installed?")
+                                     "MIDI playback not supported. Please check prerequisites.")
+
+def display_solution(sol):
+    """
+    INPUT:
+      list sol:
+        sol[i] -> ["<singer><time>", int pitchnum]
+    """
+    if not type(sol) is dict:
+        # First convert to dict repr
+        soldict = {}
+        for (k,v) in sol:
+            dictkey = k[0] + "_" + k[1:]
+            soldict[dictkey] = v
+    else:
+        soldict = dict
+    # Output in nice way
+    T = len(sol) / 4
+    for t in xrange(T):
+        print "[t={0}/{1}]".format(t+1, T)
+        for singer in util.constants.VOICE_PREFIXES:
+            k = core.solver.make_var(singer, t)
+            num = soldict[k]
+            print "  {0}: {1} ({2})".format(singer, core.Note.numToPitch_absolute(num), num)
+

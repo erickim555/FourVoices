@@ -4,14 +4,12 @@ Created on Jan 4, 2010
 @author: Sforzando
 '''
 
-import os
-import string
+import os, pdb, string
 from Tkinter import *
 import tkMessageBox
 import gui.config
 import core.Note
 from Data_Structures.dataStructs import *
-
 
 """
 Only deals with Visual aspects
@@ -28,7 +26,7 @@ class Staff(Canvas):
     ledger_len = 800
 
     treble_clef_start_x = 40
-    treble_clef_start_y = 60
+    treble_clef_start_y = 60 # Location of F5
 
     bass_clef_start_x = 40
     bass_clef_start_y = treble_clef_start_y + ( 6 * ledger_gap )
@@ -101,6 +99,7 @@ class Staff(Canvas):
         """
         time = self._calc_time(new_x)
         note_value = self._translate_to_val(new_y)
+        print "note_value: ", note_value, core.Note.numToPitch_absolute(note_value)
         if self.notes[singer].get(time) == None:    # If there isn't a note in the spot time
             self.notes[singer].add( time, note_value )
             self.create_image(new_x, new_y, image=note_head)
@@ -171,14 +170,14 @@ class Staff(Canvas):
         step_offset = offset / 10
         c_major_steps_upwards =   [2, 2, 1, 2, 2, 2, 1]
         c_major_steps_downwards = [1, 2, 2, 2, 1, 2, 2]
-        note_val = 66
+        note_val = 72 # C5
         for i in range( abs(step_offset) ):
             if step_offset < 0:
                 note_val += c_major_steps_upwards[i%7]
             else:
                 note_val -= c_major_steps_downwards[i%7]
         accidental = gui.config.accidental
-        return (note_val + accidental - 3)
+        return (note_val + accidental)
 
     def _get_notehead_gif(self, singer):
         curdir_compat = os.path.normpath(gui.config.home_dir)
@@ -379,32 +378,25 @@ class Staff(Canvas):
             self.images[singer].add( time , ( note_head, accidental ) )
             #self.times[singer] += 1
 
-    def _get_note_coords(self, pitch, time):
-        coord_A6 = self.treble_clef_start_y - 20 # The coords of A6
-        pitch_A6 = core.Note.pitchToNum_absolute("A6")
-        octave = pitch / 12
-        note = self._determine_note(pitch)
-        dict = {"G":10, "F":20, "E":30, "D":40, \
-                "C":50, "B":60, "A":70}
-        n = (6 - (octave + 1) ) * 70
-        coord_offset = dict[note[0]] + n
-        return (self.first_note_x + (time * 60), \
-                ( coord_A6 + coord_offset) )
+    def _get_note_coords(self, pitchnum, time):
+        """
+        INPUT:
+          int pitch:
+          int time:
+        """
+        #pitchnum = core.Note.pitchToNum_absolute("B3")
+        STEP = 10 # 10px is spacing between each note, ie C -> D
+                  # 20px is spacing btwn each ledger line
+        # self.treble_clef_start_y is location of C
+        coord_C6 = self.treble_clef_start_y - (STEP*4) # The coords of C6
+        pitch = core.Note.numToPitch_absolute(pitchnum)
+        note,octave = core.Note.pitchInfo(pitch)
+        dict_ = {"C": 0, "D": -STEP, "E": -STEP*2, "F": -STEP*3, "G": -STEP*4, "A": -STEP*5, "B": -STEP*6}
+        coord_offset = dict_[note[0]] + ((6 - octave)*(STEP*7))
+        ycoord = coord_C6 + coord_offset
+        return (self.first_note_x + (time * self.note_step_x),
+                ycoord )
 
-    def _determine_note(self, pitch):
-        is_accidental = 0
-        c_major = ["C", "D", "E", "F", "G", "A", "B"]
-        c_major_nums = [core.Note.pitchToNum(x) for x in c_major]
-        if ( pitch % 12 ) not in c_major_nums:
-            """ Here is our (wrong) assumption of all sharps """
-            is_accidental = 1
-            """ Assuming sharps below """
-            pitch -= 1
-        note = c_major[ c_major_nums.index(pitch % 12) ]
-        if is_accidental:
-            return note+"#"
-        else:
-            return note
     def _is_accidental(self, pitch):
         c_major = ["C", "D", "E", "F", "G", "A", "B"]
         c_major_nums = [core.Note.pitchToNum(x) for x in c_major]
