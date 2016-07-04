@@ -235,7 +235,7 @@ class HarmonySolver():
         self._halt = 0
         self.chords = TimeList()
         self.harmonies = TimeList()
-        self.num_solutions = 100000
+        self.num_solutions = 200 # max nb solutions consider (if too big, then solver takes too long)
         # list solutions:
         #   solutions[i] -> ["<singer><time>", int pitchnum]
         #   will be sorted in the following way:
