@@ -11,7 +11,6 @@ import tkMessageBox
 import tkSimpleDialog
 import core.solver
 import gui.config
-import util.SolutionToMidi
 import playback.playSolution
 import util.constants
 from Data_Structures.dataStructs import TimeList
@@ -183,7 +182,6 @@ class SolutionsResultWindow(Toplevel):
         #   where notes[i] is: ["<singer><time>", int pitchnum]
         display_solution(solution)
         status = playback.playSolution.playSolution(solution)
-        #status = util.SolutionToMidi.playSolution(solution)
         if not status:
             tkMessageBox.showwarning("MIDI playback not supported.",
                                      "MIDI playback not supported. Please check prerequisites.")

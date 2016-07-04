@@ -44,18 +44,10 @@ Only tested on Windows 7, Ubuntu (12.04).
     - Python 2.6.4/2.7.2
 
 - Optional:
-    - pygame
-        - Used for MIDI playback. Homepage at:
-            - [Pygame](http://www.pygame.org/)
-    - mxm Python MIDI Package
-        - Used to construct MIDI files for playback. Homepage at:
-            - [mxm Python Midi Package](http://www.mxm.dk/products/public/pythonmidi)
-
-Note: A design goal is to achieve playback without having to do a
-      round-about approach. Currently, the codebase converts the 
-      vocal parts into a MIDI file (using the mxm_Python_MIDI 
-      library), saves it to a temporary midi file, then plays back
-      that midi file using pygame. Questionable, at best!
+    - Mingus
+        - Used for MIDI playback: [Mingus](http://bspaans.github.io/python-mingus/index.html)
+    - FluidSynth
+        - Also used for MIDI playback: [FluidSynth](http://www.fluidsynth.org/)
       
 ## 4. How to Run
 
