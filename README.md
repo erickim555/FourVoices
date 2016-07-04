@@ -24,24 +24,18 @@ Features:
 - Audio playback (see prerequisites)
 - Export vocal parts to PDF (Coming soon...)
 
-FourVoices (as of v.0.23) uses the GNU GPL (ver3) license.
+FourVoices is an open source project (GNU GPL (ver3) license).
 
 ## 2. GitHub
 
-Since v0.23, FourVoices has been living on GitHub at:
+FourVoices is on GitHub: [https://github.com/erickim555/FourVoices](https://github.com/erickim555/FourVoices)
     
-[https://github.com/erickim555/FourVoices](https://github.com/erickim555/FourVoices)
-    
-Feel free to clone the repository, make pull requests, etc.
-
 ## 3. Prerequisites
-
-(Tentative, as of v0.23)
 
 Only tested on Windows 7, Ubuntu (12.04).
 
 - Minimums:
-    - Python 2.6.4/2.7.2
+    - Python 2.6.4/2.7.2: [Python](https://www.python.org/)
 
 - Optional:
     - Mingus
@@ -94,7 +88,7 @@ break hacking up a four-part generator with a crude user interface.
 
 ## 7. Acknowledgements
     
-As of v0.23, FourVoice is powered by a wonderful Constraint 
+FourVoice is powered by a wonderful Constraint 
 Satisfaction Problem (CSP) library written by Gustavo Niemeyer:
 
 [Python Constraint](http://labix.org/python-constraint)
