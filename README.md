@@ -13,12 +13,15 @@
 
 ## 1. About
 
-FourVoices is an automatic music generator for four-part harmonies
+FourVoices is an **automatic music generator** for **four-part writing**
 (Soprano, alto, tenor, bass).
-Particularly useful for music theory students, eg for four-part
+
+For a description of the capabilities of FourVoices, including instructions on how to use it, please read the [FourVoices Wiki](https://github.com/erickim555/FourVoices/wiki).
+
+This software is particularly useful for music theory students, eg for four-part
 writing homework assignments.
 
-Features:
+**Features:**
 - Automatic generation of correct four-part harmonizations
 - Specify lines for each singer, eg provide the soprano line, and have the FourVoices fill in the rest of the voices.
 - Chord modifiers: major/minor, seventh chords, diminished.
@@ -78,19 +81,17 @@ Or by e-mailing me at:
 
 ## 6. History
 
-The code base was originally written by Eric back in Winter of
-2009, while he was an undergraduate at the University of California, 
+FourVoices was originally written by Eric Kim in Winter 2009
+while he was an undergraduate at the University of California, 
 Berkeley. 
-An avid musician and composer, he was inspired to merge his love for
+An avid musician and composer, Eric was inspired to merge his love for
 music with his passion for computer science after taking an
 Artificial Intelligence course (cs188).
 Recognizing that the rules of four-part writing can be easily
-expressed as a constraint satisfaction problem, Eric spent a winter
-break hacking up a four-part generator with a crude user interface.
+expressed as a constraint satisfaction problem, Eric spent the winter
+break hacking together a four-part generator featuring a user interface.
 
 ## 7. Acknowledgements
     
-FourVoice is powered by a wonderful Constraint 
-Satisfaction Problem (CSP) library written by Gustavo Niemeyer:
-
-[Python Constraint](http://labix.org/python-constraint)
+FourVoice is powered by a Constraint 
+Satisfaction Problem library written by Gustavo Niemeyer: [Python Constraint](http://labix.org/python-constraint)
