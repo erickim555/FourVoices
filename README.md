@@ -1,5 +1,7 @@
 # FourVoices
 
+![FourVoices](docs/imgs/001_horiz.png)
+
 ## Table of Contents
 1. About
 2. GitHub
@@ -13,7 +15,7 @@
 
 FourVoices is an automatic music generator for four-part harmonies
 (Soprano, alto, tenor, bass).
-May be particularly useful for music theory students, eg for four-part
+Particularly useful for music theory students, eg for four-part
 writing homework assignments.
 
 Features:
@@ -21,10 +23,10 @@ Features:
 - Specify lines for each singer, eg provide the soprano line, and have the FourVoices fill in the rest of the voices.
 - Chord modifiers: major/minor, seventh chords, diminished.
 - User interface, as well as a command-line interface
-- Audio playback (see prerequisites)
+- Audio playback
 - Export vocal parts to PDF (Coming soon...)
 
-FourVoices is an open source project (GNU GPL (ver3) license).
+FourVoices is an open source project: GNU GPL (ver3) license.
 
 ## 2. GitHub
 
@@ -32,7 +34,7 @@ FourVoices is on GitHub: [https://github.com/erickim555/FourVoices](https://gith
     
 ## 3. Prerequisites
 
-Only tested on Windows 7, Ubuntu (12.04).
+Tested on Windows 7, Ubuntu (12.04).
 
 - Minimums:
     - Python 2.6.4/2.7.2: [Python](https://www.python.org/)
