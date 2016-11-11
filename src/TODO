@@ -1,0 +1,8 @@
+- Chords with GUI vs core/solver.py
+    Currently, UI incrementally updates HarmonySolver.chords whenever
+    the user creates a new chord.
+    However, adding a new figure (ie voice notes) to UI only updates
+    UI's data structs - when user clicks solve, then all notes are
+    added to HarmonySolver.figures(), and the problem is solved.
+    It'd be best if the same behavior is used for chords too.
+    
