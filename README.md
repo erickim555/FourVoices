@@ -41,29 +41,53 @@ Tested on Windows 7, Ubuntu (12.04).
 
 - Minimums:
     - Python 2.6.4/2.7.2: [Python](https://www.python.org/)
+    - python-tk (Unix: sudo apt-get install python-tk)
 
 - Optional:
     - Mingus
         - Used for MIDI playback: [Mingus](http://bspaans.github.io/python-mingus/index.html)
     - FluidSynth
-        - Also used for MIDI playback: [FluidSynth](http://www.fluidsynth.org/)
-      
+        - Also used for MIDI playback (included in mingus): [FluidSynth](http://www.fluidsynth.org/)
+
+### Installation (Unix)
+First, clone the FourVoices repo into your desired location, ie:
+
+    cd some/location
+    git clone https://github.com/erickim555/FourVoices.git .
+
+Then, install the reqiured dependencies. I recommend using a virtualenv to help make dependency management cleaner:
+
+    # install Tkinter (Python UI library)
+    sudo apt-get install python-tk
+
+    # install virtualenv (if you don't already have it)
+    pip install virtualenv
+
+    # create virtualenv at FourVoices/venv/
+    cd FourVoices
+    virtualenv venv
+
+    # enter virtual environment
+    source venv/bin/activate
+
+    # install Python dependencies
+    pip install -r requirements.txt
+
+Now you're ready to run FourVoices!
+
 ## 4. How to Run
 
 If you're in Windows, double-click the `main.py` file.
 
 If you're in Unix, simply do:
-```
-python main.py
-```
+
+    python main.py
 
 There is also a command-line interface (CLI) available in the `core/`
 subdirectory:
 
-```
-cd core/
-python solver.py PROBLEM
-```
+    cd core/
+    python solver.py PROBLEM
 
 PROBLEM is the path to a harmonic problem - see `core/tests/TEMPLATE`
 for an explanation on the file format.

@@ -1,0 +1,1 @@
+mingus==0.5.1    # midi playback

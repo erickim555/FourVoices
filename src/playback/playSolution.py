@@ -8,13 +8,13 @@ sys.path.append("..")
 from util.constants import *
 from core.Note import numToPitch_absolute, pitchToNum_absolute
 from core.solver import make_var
-import mingus.containers
 
 # Try to initialize playback
 curfiledir = os.path.split(os.path.abspath(os.path.realpath(__file__)))[0]
 PATH_SOUNDFONT = os.path.join(curfiledir, "./TimGM6mb.sf2")
 try:
     from mingus.midi import fluidsynth
+    import mingus.containers
     canPlayback = fluidsynth.init(PATH_SOUNDFONT, "pulseaudio")
 except ImportError:
     print "Warning: Could not import mingus. Playback is not supported."
@@ -36,6 +36,10 @@ def playSolution(solution):
     OUTPUT:
       True if playback is successful, False otherwise.
     """
+    # TODO(erickim)[2018-12-09] Not fond of using global canPlayback
+    if not canPlayback:
+        print "Warning: midi playback not supported. Did you install mingus?"
+        return False
     if type(solution) is dict:
         track = sol2fluidsynth(solution)
     elif type(solution) is list:
